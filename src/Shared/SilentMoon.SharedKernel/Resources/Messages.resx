@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NotNullValidator" xml:space="preserve">
+    <value>'{PropertyName}' is required.</value>
+  </data>
+  <data name="NotEmptyValidator" xml:space="preserve">
+    <value>'{PropertyName}' should not be empty.</value>
+  </data>
+  <data name="NotEqualValidator" xml:space="preserve">
+    <value>'{PropertyName}' should not be equal to '{ComparisonValue}'.</value>
+  </data>
+  <data name="EqualValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be equal to '{ComparisonValue}'.</value>
+  </data>
+  <data name="LengthValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be between {MinLength} and {MaxLength} characters.</value>
+  </data>
+  <data name="MaxLengthValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be {MaxLength} characters or less.</value>
+  </data>
+  <data name="MinLengthValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be at least {MinLength} characters.</value>
+  </data>
+  <data name="LessThanValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be less than {ComparisonValue}.</value>
+  </data>
+  <data name="LessThanOrEqualValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be less than or equal to {ComparisonValue}.</value>
+  </data>
+  <data name="GreaterThanValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be greater than {ComparisonValue}.</value>
+  </data>
+  <data name="GreaterThanOrEqualValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be greater than or equal to {ComparisonValue}.</value>
+  </data>
+  <data name="PredicateValidator" xml:space="preserve">
+    <value>The specified condition was not met for '{PropertyName}'.</value>
+  </data>
+  <data name="RegularExpressionValidator" xml:space="preserve">
+    <value>'{PropertyName}' is not in the correct format.</value>
+  </data>
+  <data name="EmailValidator" xml:space="preserve">
+    <value>'{PropertyName}' is not a valid email address.</value>
+  </data>
+  <data name="CreditCardValidator" xml:space="preserve">
+    <value>'{PropertyName}' is not a valid credit card number.</value>
+  </data>
+  <data name="EnumValidator" xml:space="preserve">
+    <value>'{PropertyName}' has a range of values which does not include the value provided.</value>
+  </data>
+  <data name="EnumNameValidator" xml:space="preserve">
+    <value>'{PropertyName}' has a name which does not exist in the enum.</value>
+  </data>
+  <data name="EmptyValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be empty.</value>
+  </data>
+  <data name="NullValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be null.</value>
+  </data>
+  <data name="ExclusiveBetweenValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be between {From} and {To} (exclusive).</value>
+  </data>
+  <data name="InclusiveBetweenValidator" xml:space="preserve">
+    <value>'{PropertyName}' must be between {From} and {To}.</value>
+  </data>
+  <data name="PrecisionScaleValidator" xml:space="preserve">
+    <value>'{PropertyName}' may not be more than {ExpectedPrecision} digits in total, with allowance for {ExpectedScale} decimals.</value>
+  </data>
+  <data name="Validation.General" xml:space="preserve">
+    <value>One or more validation errors occurred.</value>
+  </data>
+  <data name="PomodoroTime.NotEmpty" xml:space="preserve">
+    <value>test_en</value>
+  </data>
+  <data name="ErrorType.Validation" xml:space="preserve">
+    <value>Validation Error.</value>
+  </data>
+  <data name="ErrorType.InvalidRequest" xml:space="preserve">
+    <value>Invalid request provided.</value>
+  </data>
+  <data name="ErrorType.Problem" xml:space="preserve">
+    <value>A system error occurred.</value>
+  </data>
+  <data name="ErrorType.NotFound" xml:space="preserve">
+    <value>Resource not found.</value>
+  </data>
+  <data name="ErrorType.Conflict" xml:space="preserve">
+    <value>Conflict occurred.</value>
+  </data>
+  <data name="ErrorType.Unauthorized" xml:space="preserve">
+    <value>Access Denied.</value>
+  </data>
+  <data name="ErrorType.Forbidden" xml:space="preserve">
+    <value>Forbidden.</value>
+  </data>
+  <data name="ErrorType.InvalidState" xml:space="preserve">
+    <value>Invalid State.</value>
+  </data>
+  <data name="ErrorType.LimitExceeded" xml:space="preserve">
+    <value>Limit Exceeded.</value>
+  </data>
+  <data name="ErrorType.ExternalProvider" xml:space="preserve">
+    <value>External Provider Error.</value>
+  </data>
+  <data name="ErrorType.Unavailable" xml:space="preserve">
+    <value>Service Unavailable.</value>
+  </data>
+  <data name="ErrorType.Unexpected" xml:space="preserve">
+    <value>An unexpected error occurred.</value>
+  </data>
+  <data name="ErrorType.Failure" xml:space="preserve">
+    <value>Operation failed.</value>
+  </data>
+  <data name="ErrorType.Server" xml:space="preserve">
+    <value>Server Error.</value>
+  </data>
+  <data name="ErrorType.UnexpectedDetail" xml:space="preserve">
+    <value>An internal error occurred. Please contact support.</value>
+  </data>
+  <data name="ErrorType.ExternalProviderDetail" xml:space="preserve">
+    <value>An error occurred with the external service provider required to process the request.</value>
+  </data>
+  <data name="ErrorType.UnavailableDetail" xml:space="preserve">
+    <value>The system is currently unavailable due to maintenance or overload. Please try again later.</value>
+  </data>
+  <data name="NoFurtherDetails" xml:space="preserve">
+    <value>No additional information is available for this error. Please contact support.</value>
+  </data>
+  <data name="ErrorType.InvalidRequestDetail" xml:space="preserve">
+    <value>The request format or data is invalid.</value>
+  </data>
+  <data name="ErrorType.ProblemDetail" xml:space="preserve">
+    <value>An unexpected problem occurred during the execution of the request.</value>
+  </data>
+  <data name="ErrorType.NotFoundDetail" xml:space="preserve">
+    <value>The requested resource or data does not exist in the system.</value>
+  </data>
+  <data name="ErrorType.ConflictDetail" xml:space="preserve">
+    <value>The operation conflicts with existing data in the system.</value>
+  </data>
+  <data name="ErrorType.UnauthorizedDetail" xml:space="preserve">
+    <value>You must be authenticated or have sufficient permissions to perform this operation.</value>
+  </data>
+  <data name="ErrorType.ForbiddenDetail" xml:space="preserve">
+    <value>You do not have the necessary permissions to perform this operation.</value>
+  </data>
+  <data name="ErrorType.InvalidStateDetail" xml:space="preserve">
+    <value>The current state does not allow this operation to be performed.</value>
+  </data>
+  <data name="ErrorType.LimitExceededDetail" xml:space="preserve">
+    <value>The maximum limit allowed for this operation has been exceeded.</value>
+  </data>
+  <data name="ErrorType.FailureDetail" xml:space="preserve">
+    <value>The requested operation could not be completed. Please try again later.</value>
+  </data>
+  <data name="ErrorType.ServerDetail" xml:space="preserve">
+    <value>The request could not be processed due to an internal server error. The issue has been logged.</value>
+  </data>
+  <data name="Users.EmailNotUnique" xml:space="preserve">
+    <value>The provided email address is already in use.</value>
+  </data>
+  <data name="Users.TooManyLoginAttempt" xml:space="preserve">
+    <value>Too many login attempts detected!</value>
+  </data>
+  <data name="Users.CredentialsError" xml:space="preserve">
+    <value>The phone number or password is incorrect.</value>
+  </data>
+  <data name="Users.VerifyOtpError" xml:space="preserve">
+    <value>The provided OTP code is incorrect.</value>
+  </data>
+  <data name="Users.NotFound" xml:space="preserve">
+    <value>The requested user could not be found.</value>
+  </data>
+  <data name="Users.TooFrequentSmsRequest" xml:space="preserve">
+    <value>SMS requested too frequently. Please try again in a few moments.</value>
+  </data>
+  <data name="Users.LoginSessionExpired" xml:space="preserve">
+    <value>Login session expired. Please log in again.</value>
+  </data>
+  <data name="InvalidPhoneNumber" xml:space="preserve">
+    <value>Invalid phone number format. (Example: +994501234567).</value>
+  </data>
+  <data name="InvalidStateToken" xml:space="preserve">
+    <value>Invalid state token format.</value>
+  </data>
+  <data name="InvalidOtpFormat" xml:space="preserve">
+    <value>OTP must contain only digits.</value>
+  </data>
+  <data name="Login.Otp.Message" xml:space="preserve">
+    <value>Your login code: {0}.</value>
+  </data>
+  <data name="Users.PhoneNumberNotUnique" xml:space="preserve">
+    <value>This phone number is already registered.</value>
+  </data>
+  <data name="Users.TooManySignUpAttempt" xml:space="preserve">
+    <value>Too many sign-up attempts. Please try again later.</value>
+  </data>
+  <data name="Register.Otp.Message" xml:space="preserve">
+    <value>Your registration confirmation code: {0}.</value>
+  </data>
+  <data name="InvalidEmailAddress" xml:space="preserve">
+    <value>The email address format is invalid.</value>
+  </data>
+  <data name="PasswordMustUpper" xml:space="preserve">
+    <value>Password must contain at least one uppercase letter (A-Z).</value>
+  </data>
+  <data name="PasswordMustLower" xml:space="preserve">
+    <value>Password must contain at least one lowercase letter (a-z).</value>
+  </data>
+  <data name="PasswordMustDigit" xml:space="preserve">
+    <value>Password must contain at least one digit (0-9).</value>
+  </data>
+  <data name="PasswordMustCharacter" xml:space="preserve">
+    <value>Password must contain at least one special character (@, #, $, %, etc.).</value>
+  </data>
+  <data name="PasswordsDontMatch" xml:space="preserve">
+    <value>Passwords do not match.</value>
+  </data>
+</root>
