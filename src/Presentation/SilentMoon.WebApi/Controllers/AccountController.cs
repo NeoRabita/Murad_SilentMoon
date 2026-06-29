@@ -1,60 +1,83 @@
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SilentMoon.Application.DTOs.Account;
-using SilentMoon.Application.DTOs.Email;
-using SilentMoon.Application.Interfaces.Services;
-using SilentMoon.WebApi.StartupInjections.Validations;
+using SilentMoon.Application.Features.Accounts.Commands.ResendOtp;
+using SilentMoon.Application.Features.User.Commands.GoogleLogin;
+using SilentMoon.Application.Features.User.Commands.Login;
+using SilentMoon.Application.Features.User.Commands.Otp;
+using SilentMoon.Application.Features.User.Commands.RefreshToken;
+using SilentMoon.Application.Features.User.Commands.Resgister;
+using SilentMoon.Application.Features.User.Commands.VerifyEmail;
+using System.Threading.Tasks;
 
 namespace SilentMoon.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [ValidateModel]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseController
     {
-        private readonly IAccountService _accountService;
-
-        public AccountController(IAccountService accountService)
-        {
-            _accountService = accountService;
-        }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
+        public async Task<IResult> Register(
+            [FromBody] RegisterCommand command)
         {
-            return Ok(await _accountService.RegisterAsync(request));
+            var result = await Dispatcher.Send(command);
+
+            return HandleResult(result);
         }
-        [HttpPost("confirmemail")]
-        public async Task<IActionResult> ConfirmEmailAsync([FromBody] ConfirmEmailRequest request)
+
+
+        [HttpPost("verify-email")]
+        public async Task<IResult> VerifyEmail(
+            [FromBody] VerifyEmailCommand command)
         {
-            return Ok(await _accountService.ConfirmEmailAsync(request.Email, request.Code));
+            var result = await Dispatcher.Send(command);
+
+            return HandleResult(result);
         }
-        [HttpPost("authenticate")]
-        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticationRequest request)
+
+
+        [HttpPost("login")]
+        public async Task<IResult> Login(
+            [FromBody] LoginCommand command)
         {
-            return Ok(await _accountService.AuthenticateAsync(request, GenerateIPAddress()));
+            var result = await Dispatcher.Send(command);
+
+            return HandleResult(result);
         }
-        [HttpPost("forgotpassword")]
-        public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
+
+        [HttpPost("refresh-token")]
+        public async Task<IResult> RefreshToken(
+        [FromBody] RefreshTokenRequest request)
         {
-            return Ok(await _accountService.ForgotPasswordAsync(request));
+            var result =
+                await Dispatcher.Send(
+                    new RefreshTokenCommand
+                    {
+                        RefreshToken = request.RefreshToken
+                    });
+
+            return HandleResult(result);
         }
-        [HttpPost("resetpassword")]
-        public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
+
+        [HttpPost("resend-otp")]
+        public async Task<IResult> ResendOtp(
+        [FromBody] ResendOtpRequest command)
         {
-            return Ok(await _accountService.ResetPasswordAsync(request));
+            var result =
+                await Dispatcher.Send(new ResendOtpCommand
+                {
+                    Email = command.Email
+                });
+
+            return HandleResult(result);
         }
-        [HttpPost("revokeByRefreshToken")]
-        public async Task<IActionResult> RevokeByRefreshToken([FromQuery] string refreshToken)
+
+        [HttpPost("google-login")]
+        public async Task<IResult> GoogleLogin(
+        [FromBody] GoogleLoginCommand command)
         {
-            return Ok(await _accountService.RevokeByRefreshToken(refreshToken));
-        }
-        private string GenerateIPAddress()
-        {
-            if (Request.Headers.ContainsKey("X-Forwarded-For"))
-                return Request.Headers["X-Forwarded-For"];
-            else
-                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            var result =
+                await Dispatcher.Send(command);
+
+            return HandleResult(result);
         }
     }
 }
