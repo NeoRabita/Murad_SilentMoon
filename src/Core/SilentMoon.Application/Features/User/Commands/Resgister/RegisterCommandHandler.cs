@@ -72,7 +72,7 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
 
 
 
-            var otp = new Otp
+            var otp = new Domain.Entities.Otp
             {
                 UserId = user.Id,
 
@@ -85,7 +85,7 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
             };
 
 
-            var otpRepo = _uow.GetRepository<Otp>();
+            var otpRepo = _uow.GetRepository<Domain.Entities.Otp>();
 
 
             await otpRepo.AddAsync(otp, ct);

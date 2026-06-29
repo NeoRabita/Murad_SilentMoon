@@ -94,11 +94,11 @@ namespace SilentMoon.Application.Features.User.Commands.Login
 
 
             var refreshRepo =
-                _uow.GetRepository<RefreshToken>();
+                _uow.GetRepository<Domain.Entities.RefreshToken>();
 
 
             await refreshRepo.AddAsync(
-                new RefreshToken
+                new Domain.Entities.RefreshToken
                 {
                     ApplicationUserId = user.Id,
 

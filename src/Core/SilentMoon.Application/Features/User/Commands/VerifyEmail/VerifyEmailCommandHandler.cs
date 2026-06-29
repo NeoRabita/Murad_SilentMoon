@@ -45,7 +45,7 @@ namespace SilentMoon.Application.Features.User.Commands.VerifyEmail
 
 
             var otpRepo =
-                _uow.GetRepository<Otp>();
+                _uow.GetRepository<Domain.Entities.Otp>();
 
 
             var otp = await otpRepo.FirstOrDefaultAsync(

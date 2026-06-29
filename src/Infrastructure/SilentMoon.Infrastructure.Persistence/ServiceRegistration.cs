@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SilentMoon.Application.Interfaces.Authentication;
 using SilentMoon.Application.Interfaces.Caching;
+using SilentMoon.Application.Interfaces.GoogleAuthService;
 using SilentMoon.Application.Interfaces.Logging;
 using SilentMoon.Application.Interfaces.Repositories;
 using SilentMoon.Application.Interfaces.Security;
@@ -42,6 +43,7 @@ namespace SilentMoon.Infrastructure.Persistence
             services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<ITokenGeneratorService,TokenGeneratorService>();
+            services.AddScoped<IGoogleAuthService, GoogleAuthService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDapper, DapperClass>();
             services.AddScoped<IUow, Uow>();
