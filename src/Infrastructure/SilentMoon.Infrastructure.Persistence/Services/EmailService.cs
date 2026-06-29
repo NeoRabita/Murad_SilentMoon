@@ -42,5 +42,28 @@ namespace SilentMoon.Infrastructure.Persistence.Services
                 throw;
             }
         }
+
+        public async Task SendOtpEmailAsync(
+    string email,
+    string name,
+    string otp)
+        {
+            await SendAsync(new EmailRequest
+            {
+                To = email,
+
+                Subject = "Confirm your account",
+
+                Body = $@"
+            <h2>Welcome {name}</h2>
+
+            <p>Your verification code:</p>
+
+            <h1>{otp}</h1>
+
+            <p>Expires in 10 minutes.</p>
+        "
+            });
+        }
     }
 }

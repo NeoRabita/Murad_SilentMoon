@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using SilentMoon.Domain.Common;
+using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
 
 namespace SilentMoon.Domain.Entities
 {
@@ -12,5 +13,9 @@ namespace SilentMoon.Domain.Entities
         public bool IsExpired => DateTime.UtcNow >= Expires;
         public DateTime Created { get; set; }
         public string CreatedByIp { get; set; }
+
+        public ApplicationUser ApplicationUser { get; set; }
+
+        public int ApplicationUserId { get; set; }
     }
 }

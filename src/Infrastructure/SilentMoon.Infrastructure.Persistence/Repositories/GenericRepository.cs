@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using SilentMoon.Application.Interfaces.Repositories;
 using SilentMoon.Infrastructure.Persistence.Contexts;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SilentMoon.Infrastructure.Persistence.Repositories
 {
@@ -41,6 +43,14 @@ namespace SilentMoon.Infrastructure.Persistence.Repositories
         public void DeleteRange(IEnumerable<T> entities)
         {
             _dbSet.RemoveRange(entities);
+        }
+
+        public async Task<T?> FirstOrDefaultAsync(
+    Expression<Func<T, bool>> predicate,
+    CancellationToken cancellationToken = default)
+        {
+            return await _dbSet
+                .FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
         public virtual async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default)

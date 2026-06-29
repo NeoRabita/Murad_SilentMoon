@@ -15,4 +15,10 @@
     <ProjectReference Include="..\SilentMoon.Domain\SilentMoon.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Pomodoros\Commands\CreatePomodoro\" />
+    <Folder Include="Features\User\Commands\NewFolder\" />
+    <Folder Include="Mappings\" />
+  </ItemGroup>
+
 </Project>

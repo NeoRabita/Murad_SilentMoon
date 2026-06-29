@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SilentMoon.Domain.Entities;
+using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
 
 namespace SilentMoon.Infrastructure.Persistence.Contexts
 {
@@ -15,5 +17,7 @@ namespace SilentMoon.Infrastructure.Persistence.Contexts
 
             base.OnModelCreating(modelBuilder);
         }
+
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     }
 }

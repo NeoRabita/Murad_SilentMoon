@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SilentMoon.Application.DTOs.Account;
 using SilentMoon.Application.DTOs.JWT;
 using SilentMoon.Domain.Entities;
+using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
 
 namespace SilentMoon.Application.Interfaces.Services
 {

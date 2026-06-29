@@ -39,7 +39,7 @@ namespace SilentMoon.WebApi
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+              app.UseDeveloperExceptionPage();
             }
 
             app.UseLocalization();

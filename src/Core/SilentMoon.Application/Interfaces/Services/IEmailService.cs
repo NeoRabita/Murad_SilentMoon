@@ -7,5 +7,10 @@ namespace SilentMoon.Application.Interfaces.Services
     public interface IEmailService
     {
         Task SendAsync(EmailRequest request);
+
+        Task SendOtpEmailAsync(
+      string email,
+      string name,
+      string otp);
     }
 }
