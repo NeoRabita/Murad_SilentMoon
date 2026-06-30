@@ -1,12 +1,12 @@
-﻿using System;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using SilentMoon.Application.Interfaces.Messaging;
+using SilentMoon.SharedKernel.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentValidation;
-using FluentValidation.Results;
-using SilentMoon.Application.Interfaces.Messaging;
-using SilentMoon.SharedKernel.Primitives;
 
 namespace SilentMoon.Application.Behaviours.Validation
 {
@@ -37,7 +37,6 @@ namespace SilentMoon.Application.Behaviours.Validation
 
             return CreateFailure(error);
         }
-
 
         private static TResponse CreateFailure(Error error)
         {

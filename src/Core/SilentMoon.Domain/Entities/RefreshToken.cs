@@ -1,7 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using SilentMoon.Domain.Common;
 using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SilentMoon.Domain.Entities
 {

@@ -1,5 +1,3 @@
-using System;
-
 namespace SilentMoon.Domain.Enums
 {
     public enum PomodoroSessionType

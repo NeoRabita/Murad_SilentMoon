@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace SilentMoon.Application.DTOs.Account
 {
     public class RegisterRequest
@@ -8,13 +6,10 @@ namespace SilentMoon.Application.DTOs.Account
 
         public string LastName { get; set; }
 
-  
         public string UserName { get; set; }
 
- 
         public string Email { get; set; }
 
- 
         public string Password { get; set; }
 
         public string ConfirmPassword { get; set; }

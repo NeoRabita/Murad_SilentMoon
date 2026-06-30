@@ -26,9 +26,7 @@ namespace SilentMoon.Domain.Entities
 
             public List<Otp> Otps { get; set; }
 
-
             public List<RefreshToken> RefreshToken { get; set; }
         }
     }
-
 }

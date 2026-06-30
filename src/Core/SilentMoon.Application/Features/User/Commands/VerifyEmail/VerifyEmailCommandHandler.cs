@@ -1,4 +1,6 @@
 ﻿using Application.Abstractions.Messaging;
+using SilentMoon.Application.Common.Extensions;
+using SilentMoon.Application.Interfaces.Caching;
 using SilentMoon.Domain.Entities;
 using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
 using System;
@@ -10,80 +12,53 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.User.Commands.VerifyEmail
 {
-    public class VerifyEmailCommandHandler
-    : ICommandHandler<VerifyEmailCommand>
+    public class VerifyEmailCommandHandler : ICommandHandler<VerifyEmailCommand>
     {
         private readonly IUow _uow;
+        private readonly ICacheService _cacheService;
 
-
-        public VerifyEmailCommandHandler(IUow uow)
+        public VerifyEmailCommandHandler(IUow uow, ICacheService cacheService)
         {
             _uow = uow;
+            _cacheService = cacheService;
         }
 
-
-        public async Task<Result> Handle(
-            VerifyEmailCommand command,
-            CancellationToken ct)
+        public async Task<Result> Handle(VerifyEmailCommand command, CancellationToken ct)
         {
-            var userRepo =
-                _uow.GetRepository<ApplicationUser>();
+            var userRepo = _uow.GetRepository<ApplicationUser>();
 
-
-            var user = await userRepo
-                .FirstOrDefaultAsync(
-                    x => x.Email == command.Email,
-                    ct);
-
+            var user = await userRepo.FirstOrDefaultAsync(x => x.Email == command.Email,ct);
 
             if (user == null)
             {
-                return Error.NotFound(
-                    "User",
-                    "User not found");
+                return Error.NotFound("User", "User not found");
             }
 
-
-            var otpRepo =
-                _uow.GetRepository<Domain.Entities.Otp>();
-
-
-            var otp = await otpRepo.FirstOrDefaultAsync(
-                x =>
-                x.UserId == user.Id &&
-                x.Code == command.Code &&
-                !x.IsUsed,
-                ct);
-
-
-            if (otp == null)
+            if (user.IsEmailConfirmed)
             {
-                return Error.Validation(
-                    "OTP",
-                    "Invalid code");
+                return Error.Validation("Email", "Already confirmed");
             }
 
+            var key = CacheExtensions.EmailVerification(user.Id);
 
-            if (otp.ExpireDate < DateTime.UtcNow)
+            var cachedOtp = await _cacheService.GetAsync<string>(key);
+
+            if (cachedOtp == null)
             {
-                return Error.Validation(
-                    "OTP",
-                    "Code expired");
+                return Error.Validation("OTP", "Code expired");
             }
 
+            if (cachedOtp != command.Code)
+            {
+                return Error.Validation("OTP", "Invalid code");
+            }
 
+            await _cacheService.RemoveAsync(key);
 
             user.IsEmailConfirmed = true;
-
-            otp.IsUsed = true;
-
-
             userRepo.Update(user);
-            otpRepo.Update(otp);
-
 
             await _uow.SaveChangesAsync(ct);
-
 
             return Result.Success();
         }

@@ -1,6 +1,8 @@
-﻿using Application.Abstractions.Messaging;
+using Application.Abstractions.Messaging;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.DTOs.Email;
 using SilentMoon.Application.Features.Accounts.Commands.ResendOtp;
+using SilentMoon.Application.Interfaces.Caching;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
 using System;
@@ -9,38 +11,32 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.User.Commands.Otp
 {
-    public class ResendOtpCommandHandler
-        : ICommandHandler<ResendOtpCommand>
+    public class ResendOtpCommandHandler: ICommandHandler<ResendOtpCommand>
     {
         private readonly IUow _uow;
         private readonly IOtpService _otpService;
         private readonly IEmailService _emailService;
-
+        private readonly ICacheService _cacheService;
 
         public ResendOtpCommandHandler(
             IUow uow,
             IOtpService otpService,
-            IEmailService emailService)
+            IEmailService emailService,
+            ICacheService cacheService)
         {
             _uow = uow;
             _otpService = otpService;
             _emailService = emailService;
+            _cacheService = cacheService;
         }
-
 
         public async Task<Result> Handle(
             ResendOtpCommand command,
             CancellationToken ct)
         {
-            var userRepo =
-                _uow.GetRepository<ApplicationUser>();
+            var userRepo = _uow.GetRepository<ApplicationUser>();
 
-
-            var user =
-                await userRepo.FirstOrDefaultAsync(
-                    x => x.Email == command.Email,
-                    ct);
-
+            var user = await userRepo.FirstOrDefaultAsync(x => x.Email == command.Email,ct);
 
             if (user == null)
             {
@@ -49,7 +45,6 @@ namespace SilentMoon.Application.Features.User.Commands.Otp
                     "User not found");
             }
 
-
             if (user.IsEmailConfirmed)
             {
                 return Error.Validation(
@@ -57,67 +52,21 @@ namespace SilentMoon.Application.Features.User.Commands.Otp
                     "Email already confirmed");
             }
 
+            var otpCode = _otpService.Generate();
 
-
-            var otpRepo =
-                _uow.GetRepository<Domain.Entities.Otp>();
-
-
-            var oldOtp =
-                await otpRepo.FirstOrDefaultAsync(
-                    x =>
-                    x.UserId == user.Id
-                    &&
-                    !x.IsUsed,
-                    ct);
-
-
-
-            if (oldOtp != null)
-            {
-                oldOtp.IsUsed = true;
-                otpRepo.Update(oldOtp);
-            }
-
-
-
-            var otp = new Domain.Entities.Otp
-            {
-                UserId = user.Id,
-
-                Code = _otpService.Generate(),
-
-                ExpireDate =
-                    DateTime.UtcNow.AddMinutes(10),
-
-                IsUsed = false
-            };
-
-
-            await otpRepo.AddAsync(
-                otp,
-                ct);
-
-
+            await _cacheService.SetAsync(CacheExtensions.EmailVerification(user.Id),otpCode,TimeSpan.FromMinutes(10));
 
             await _emailService.SendAsync(
                 new EmailRequest
                 {
                     To = user.Email,
-
                     Subject = "Confirm your account",
-
                     Body = $@"
                     <h2>Hello {user.FirstName}</h2>
                     <p>Your new OTP:</p>
-                    <h1>{otp.Code}</h1>
+                    <h1>{otpCode}</h1>
                     <p>Expires in 10 minutes.</p>"
                 });
-
-
-
-            await _uow.SaveChangesAsync(ct);
-
 
             return Result.Success();
         }

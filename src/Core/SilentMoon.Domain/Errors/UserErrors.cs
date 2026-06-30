@@ -20,5 +20,4 @@ namespace SilentMoon.Domain.Errors
             "Users.EmailNotUnique",
             "The provided email is not unique");
     }
-
 }

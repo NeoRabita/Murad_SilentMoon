@@ -12,8 +12,7 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.User.Commands.GoogleLogin
 {
-    public class GoogleLoginCommandHandler
-    : ICommandHandler<GoogleLoginCommand, LoginResponse>
+    public class GoogleLoginCommandHandler: ICommandHandler<GoogleLoginCommand, LoginResponse>
     {
 
         private readonly IUow _uow;
@@ -33,14 +32,10 @@ namespace SilentMoon.Application.Features.User.Commands.GoogleLogin
 
 
 
-        public async Task<Result<LoginResponse>> Handle(
-         GoogleLoginCommand command,
-         CancellationToken ct)
+        public async Task<Result<LoginResponse>> Handle(GoogleLoginCommand command,CancellationToken ct)
         {
 
-            var googleUser =
-             await _google.ValidateToken(
-             command.IdToken);
+            var googleUser =await _google.ValidateToken(command.IdToken);
 
 
             if (googleUser == null)
@@ -49,8 +44,6 @@ namespace SilentMoon.Application.Features.User.Commands.GoogleLogin
                 "Google",
                 "Invalid token");
             }
-
-
 
             var repo =
              _uow.GetRepository<ApplicationUser>();

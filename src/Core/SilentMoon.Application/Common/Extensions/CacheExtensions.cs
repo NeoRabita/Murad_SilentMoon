@@ -24,5 +24,8 @@ namespace SilentMoon.Application.Common.Extensions
 
             return result;
         }
+
+        public static string EmailVerification(int userId) =>
+          $"otp:user:{userId}";
     }
 }

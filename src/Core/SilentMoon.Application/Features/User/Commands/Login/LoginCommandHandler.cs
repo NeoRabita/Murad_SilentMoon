@@ -12,8 +12,7 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.User.Commands.Login
 {
-    public class LoginCommandHandler
-        : ICommandHandler<LoginCommand, LoginResponse>
+    public class LoginCommandHandler : ICommandHandler<LoginCommand, LoginResponse>
     {
         private readonly IUow _uow;
         private readonly IPasswordHasher _passwordHasher;
