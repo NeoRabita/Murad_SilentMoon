@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +6,7 @@ using SilentMoon.Application.Interfaces.Authentication;
 using SilentMoon.Application.Interfaces.Caching;
 using SilentMoon.Application.Interfaces.GoogleAuthService;
 using SilentMoon.Application.Interfaces.Logging;
+using SilentMoon.Application.Interfaces.Messaging;
 using SilentMoon.Application.Interfaces.Repositories;
 using SilentMoon.Application.Interfaces.Security;
 using SilentMoon.Application.Interfaces.Services;
@@ -13,6 +14,7 @@ using SilentMoon.Infrastructure.Persistence.Caching;
 using SilentMoon.Infrastructure.Persistence.Contexts;
 using SilentMoon.Infrastructure.Persistence.Dapper;
 using SilentMoon.Infrastructure.Persistence.Logging;
+using SilentMoon.Infrastructure.Persistence.Messaging;
 using SilentMoon.Infrastructure.Persistence.Repositories;
 using SilentMoon.Infrastructure.Persistence.Services;
 using SilentMoon.Infrastructure.Persistence.Settings;
@@ -41,12 +43,16 @@ namespace SilentMoon.Infrastructure.Persistence
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDateTimeService, DateTimeService>();
             services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
-            services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<ITokenGeneratorService,TokenGeneratorService>();
             services.AddScoped<IGoogleAuthService, GoogleAuthService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDapper, DapperClass>();
             services.AddScoped<IUow, Uow>();
+
+            services.Configure<RabbitMqSettings>(configuration.GetSection("RabbitMqSettings"));
+            services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
+            services.AddHostedService<OtpEmailConsumer>();
+
             RegisterDapperDomainMappings();
         }
         #region APIRepositories

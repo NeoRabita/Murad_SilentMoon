@@ -1,4 +1,4 @@
-namespace SilentMoon.Application.Messages
+namespace SilentMoon.Application.DTOs.Otp
 {
     public class OtpEmailMessage
     {
