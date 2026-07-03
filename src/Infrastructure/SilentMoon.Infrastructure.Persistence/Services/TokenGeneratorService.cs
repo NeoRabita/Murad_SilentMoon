@@ -53,9 +53,7 @@ namespace SilentMoon.Infrastructure.Persistence.Services
         public Task<string> GenerateJwtAccessTokenAsync(
             List<Claim> claims)
         {
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(
-                    _settings.JWTSettings.Key));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.JWTSettings.Key));
 
 
             var credentials =

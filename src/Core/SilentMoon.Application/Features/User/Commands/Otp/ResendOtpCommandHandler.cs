@@ -1,11 +1,7 @@
 using Application.Abstractions.Messaging;
-using SilentMoon.Application.Common.Extensions;
-using SilentMoon.Application.DTOs.Email;
 using SilentMoon.Application.Features.Accounts.Commands.ResendOtp;
-using SilentMoon.Application.Interfaces.Caching;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,20 +10,14 @@ namespace SilentMoon.Application.Features.User.Commands.Otp
     public class ResendOtpCommandHandler: ICommandHandler<ResendOtpCommand>
     {
         private readonly IUow _uow;
-        private readonly IOtpService _otpService;
-        private readonly IEmailService _emailService;
-        private readonly ICacheService _cacheService;
+        private readonly IOtpSender _otpSender;
 
         public ResendOtpCommandHandler(
             IUow uow,
-            IOtpService otpService,
-            IEmailService emailService,
-            ICacheService cacheService)
+            IOtpSender otpSender)
         {
             _uow = uow;
-            _otpService = otpService;
-            _emailService = emailService;
-            _cacheService = cacheService;
+            _otpSender = otpSender;
         }
 
         public async Task<Result> Handle(
@@ -52,21 +42,7 @@ namespace SilentMoon.Application.Features.User.Commands.Otp
                     "Email already confirmed");
             }
 
-            var otpCode = _otpService.Generate();
-
-            await _cacheService.SetAsync(CacheExtensions.EmailVerification(user.Id),otpCode,TimeSpan.FromMinutes(10));
-
-            await _emailService.SendAsync(
-                new EmailRequest
-                {
-                    To = user.Email,
-                    Subject = "Confirm your account",
-                    Body = $@"
-                    <h2>Hello {user.FirstName}</h2>
-                    <p>Your new OTP:</p>
-                    <h1>{otpCode}</h1>
-                    <p>Expires in 10 minutes.</p>"
-                });
+            await _otpSender.SendAsync(user.Id, user.Email, user.FirstName, ct);
 
             return Result.Success();
         }

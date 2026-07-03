@@ -58,8 +58,6 @@ namespace SilentMoon.Application.Features.User.Commands.VerifyEmail
             user.IsEmailConfirmed = true;
             userRepo.Update(user);
 
-            await _uow.SaveChangesAsync(ct);
-
             return Result.Success();
         }
     }

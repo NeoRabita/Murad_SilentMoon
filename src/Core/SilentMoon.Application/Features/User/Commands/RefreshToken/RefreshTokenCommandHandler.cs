@@ -85,8 +85,6 @@ namespace SilentMoon.Application.Features.User.Commands.RefreshToken
                 },
                 ct);
 
-            await _uow.SaveChangesAsync(ct);
-
             return new LoginResponse
             {
                 AccessToken = accessToken,

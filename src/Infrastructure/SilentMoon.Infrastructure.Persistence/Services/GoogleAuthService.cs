@@ -2,10 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using SilentMoon.Application.DTOs.GoogleAuth;
 using SilentMoon.Application.Interfaces.GoogleAuthService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SilentMoon.Infrastructure.Persistence.Services
@@ -26,10 +22,7 @@ namespace SilentMoon.Infrastructure.Persistence.Services
         public async Task<GoogleUserInfo?> ValidateToken(
             string token)
         {
-            var payload =
-                await GoogleJsonWebSignature
-                .ValidateAsync(
-                    token,
+            var payload = await GoogleJsonWebSignature.ValidateAsync(token,
                     new GoogleJsonWebSignature.ValidationSettings
                     {
                         Audience = new[]

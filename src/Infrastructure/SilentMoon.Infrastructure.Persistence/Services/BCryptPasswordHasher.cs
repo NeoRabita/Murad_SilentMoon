@@ -10,9 +10,7 @@ namespace SilentMoon.Infrastructure.Persistence.Services
         }
 
 
-        public bool Verify(
-            string password,
-            string passwordHash)
+        public bool Verify(string password,string passwordHash)
         {
             return BCrypt.Net.BCrypt.Verify(
                 password,
