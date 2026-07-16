@@ -39,16 +39,18 @@ namespace SilentMoon.Application.Features.User.Commands.VerifyEmail
                 return Error.Validation("Email", "Already confirmed");
             }
 
-            var key = CacheExtensions.EmailVerification(user.Id);
+            var key = CacheExtensions.OtpCacheKey(command.Email);
 
-            var cachedOtp = await _cacheService.GetAsync<string>(key);
+            var cachedHash = await _cacheService.GetAsync<string>(key);
 
-            if (cachedOtp == null)
+            if (cachedHash == null)
             {
                 return Error.Validation("OTP", "Code expired");
             }
 
-            if (cachedOtp != command.Code)
+            var submittedHash = OtpHasher.Hash(command.Code);
+
+            if (cachedHash != submittedHash)
             {
                 return Error.Validation("OTP", "Invalid code");
             }

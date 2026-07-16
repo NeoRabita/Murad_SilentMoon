@@ -11,17 +11,13 @@ namespace SilentMoon.Application.Features.User.Commands.UpdateMe
         private readonly IUow _uow;
         private readonly ICurrentUser _currentUser;
 
-        public UpdateMeCommandHandler(
-            IUow uow,
-            ICurrentUser currentUser)
+        public UpdateMeCommandHandler(IUow uow,ICurrentUser currentUser)
         {
             _uow = uow;
             _currentUser = currentUser;
         }
 
-        public async Task<Result<MeResponse>> Handle(
-            UpdateMeCommand command,
-            CancellationToken ct)
+        public async Task<Result<MeResponse>> Handle(UpdateMeCommand command,CancellationToken ct)
         {
             var userRepo = _uow.GetRepository<ApplicationUser>();
 
@@ -50,8 +46,6 @@ namespace SilentMoon.Application.Features.User.Commands.UpdateMe
             }
 
             userRepo.Update(user);
-
-            await _uow.SaveChangesAsync(ct);
 
             return new MeResponse
             {

@@ -110,10 +110,6 @@ namespace SilentMoon.Application.Features.User.Commands.Login
 
 
 
-            await _uow.SaveChangesAsync(ct);
-
-
-
             return new LoginResponse
             {
                 AccessToken = accessToken,

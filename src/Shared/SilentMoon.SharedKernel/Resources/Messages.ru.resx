@@ -333,4 +333,31 @@
   <data name="PasswordsDontMatch" xml:space="preserve">
     <value>Пароли не совпадают.</value>
   </data>
+  <data name="ErrorType.ValidationDetail" xml:space="preserve">
+    <value>Одно или несколько полей запроса не прошли проверку.</value>
+  </data>
+  <data name="User.NotFound" xml:space="preserve">
+    <value>Пользователь не найден.</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Пользователь не найден.</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email не подходит для данной операции.</value>
+  </data>
+  <data name="OTP" xml:space="preserve">
+    <value>Введённый OTP-код неверен или истёк.</value>
+  </data>
+  <data name="Auth.InvalidCredentials" xml:space="preserve">
+    <value>Введённый email или пароль неверны.</value>
+  </data>
+  <data name="RefreshToken" xml:space="preserve">
+    <value>Refresh token недействителен, отозван или истёк.</value>
+  </data>
+  <data name="Google" xml:space="preserve">
+    <value>Предоставленный токен Google недействителен.</value>
+  </data>
+  <data name="Reminder.NotFound" xml:space="preserve">
+    <value>Напоминание не найдено.</value>
+  </data>
 </root>

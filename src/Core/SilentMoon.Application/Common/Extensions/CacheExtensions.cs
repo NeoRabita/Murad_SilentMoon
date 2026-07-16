@@ -25,7 +25,7 @@ namespace SilentMoon.Application.Common.Extensions
             return result;
         }
 
-        public static string EmailVerification(int userId) =>
-          $"otp:user:{userId}";
+        public static string OtpCacheKey(string email) =>
+          $"otp:verify-email:{email}";
     }
 }

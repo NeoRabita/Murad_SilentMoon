@@ -34,7 +34,9 @@ namespace SilentMoon.Infrastructure.Persistence.Services
         {
             var otpCode = GenerateOtp();
 
-            await _cacheService.SetAsync(CacheExtensions.EmailVerification(userId),otpCode,TimeSpan.FromMinutes(10));
+            var otpHash = OtpHasher.Hash(otpCode);
+
+            await _cacheService.SetAsync(CacheExtensions.OtpCacheKey(email),otpHash,TimeSpan.FromMinutes(10));
 
             var message = new OtpEmailMessage
             {

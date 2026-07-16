@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.User.Commands.Resgister
 {
-    public class RegisterCommandHandler
-        : ICommandHandler<RegisterCommand>
+    public class RegisterCommandHandler: ICommandHandler<RegisterCommand>
     {
         private readonly IUow _uow;
         private readonly IAppLogger<RegisterCommandHandler> _logger;
@@ -28,9 +27,7 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
             _otpSender = otpSender;
         }
 
-        public async Task<Result> Handle(
-            RegisterCommand command,
-            CancellationToken ct)
+        public async Task<Result> Handle(RegisterCommand command,CancellationToken ct)
         {
             var userRepo = _uow.GetRepository<ApplicationUser>();
 

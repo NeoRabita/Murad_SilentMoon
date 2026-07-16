@@ -49,8 +49,6 @@ namespace SilentMoon.Application.Features.Reminders.Commands.UpdateReminder
 
             reminderRepo.Update(reminder);
 
-            await _uow.SaveChangesAsync(ct);
-
             return new ReminderResponse
             {
                 Id = reminder.Id,

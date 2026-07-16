@@ -34,8 +34,6 @@ namespace SilentMoon.Application.Features.Reminders.Commands.DeleteReminder
 
             reminderRepo.Delete(reminder);
 
-            await _uow.SaveChangesAsync(ct);
-
             return Result.Success();
         }
     }
