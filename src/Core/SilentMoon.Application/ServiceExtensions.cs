@@ -3,7 +3,6 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using SilentMoon.Application.Interfaces.Messaging;
 using SilentMoon.Application.Interfaces.Services;
-using SilentMoon.Application.Services;
 
 namespace SilentMoon.Application
 {
@@ -14,7 +13,6 @@ namespace SilentMoon.Application
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddScoped<IDispatcher, Dispatcher>();
             services.AddCqrsHandlers(Assembly.GetExecutingAssembly());
-            services.AddScoped<IOtpSender, OtpSender>();
         }
     }
 }

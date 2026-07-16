@@ -32,7 +32,10 @@ namespace SilentMoon.Infrastructure.Persistence
             options.UseOracle(configuration["APIAppSettings:ConnectionString"],
             b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
-            services.AddStackExchangeRedisCache(options => {
+
+            services.Configure<RabbitMqSettings>(configuration.GetSection("APIAppSettings:RabbitMqSettings"));
+            services.AddStackExchangeRedisCache(options =>
+            {
                 options.Configuration = configuration["APIAppSettings:Redis"];
                 options.InstanceName = Assembly.GetEntryAssembly()?.GetName().Name + "_";
             });
@@ -43,13 +46,15 @@ namespace SilentMoon.Infrastructure.Persistence
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDateTimeService, DateTimeService>();
             services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
-            services.AddScoped<ITokenGeneratorService,TokenGeneratorService>();
+            services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
             services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+            services.AddScoped<IOtpSender, OtpSender>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ICurrentUser, CurrentUser>();
             services.AddScoped<IDapper, DapperClass>();
             services.AddScoped<IUow, Uow>();
 
-            services.Configure<RabbitMqSettings>(configuration.GetSection("RabbitMqSettings"));
+           
             services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
             services.AddHostedService<OtpEmailConsumer>();
 

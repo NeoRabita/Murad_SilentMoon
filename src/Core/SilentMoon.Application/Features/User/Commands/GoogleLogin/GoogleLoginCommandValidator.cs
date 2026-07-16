@@ -7,7 +7,7 @@ namespace SilentMoon.Application.Features.User.Commands.GoogleLogin
         public GoogleLoginCommandValidator()
         {
             RuleFor(x => x.IdToken)
-                .NotEmpty().WithMessage("Google Id Token boş ola bilməz.");
+                .NotEmpty();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace SilentMoon.Application.Features.User.Commands.RefreshToken
         public RefreshTokenCommandValidator()
         {
             RuleFor(x => x.RefreshToken)
-                .NotEmpty().WithMessage("Refresh token boş ola bilməz.");
+                .NotEmpty();
         }
     }
 }

@@ -7,12 +7,12 @@ namespace SilentMoon.Application.Features.User.Commands.VerifyEmail
         public VerifyEmailCommandValidator()
         {
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email boş ola bilməz.")
-                .EmailAddress().WithMessage("Email düzgün formatda deyil.");
+                .NotEmpty()
+                .EmailAddress();
 
             RuleFor(x => x.Code)
-                .NotEmpty().WithMessage("Doğrulama kodu boş ola bilməz.")
-                .Length(6).WithMessage("Doğrulama kodu 6 simvol olmalıdır.");
+                .NotEmpty()
+                .Length(6);
         }
     }
 }

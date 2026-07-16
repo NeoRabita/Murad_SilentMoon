@@ -7,8 +7,8 @@ namespace SilentMoon.Application.Features.Accounts.Commands.ResendOtp
         public ResendOtpCommandValidator()
         {
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email boş ola bilməz.")
-                .EmailAddress().WithMessage("Email düzgün formatda deyil.");
+                .NotEmpty()
+                .EmailAddress();
         }
     }
 }

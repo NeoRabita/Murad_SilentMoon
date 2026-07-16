@@ -8,6 +8,7 @@
 		<PackageReference Include="Dapper" Version="2.1.66" />
 		<PackageReference Include="Google.Apis.Auth" Version="1.75.0" />
 		<PackageReference Include="JWT" Version="11.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.11" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.12">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

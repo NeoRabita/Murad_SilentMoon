@@ -1,14 +1,14 @@
 using SilentMoon.Application.Common.Extensions;
+using SilentMoon.Application.DTOs.Otp;
 using SilentMoon.Application.Interfaces.Caching;
 using SilentMoon.Application.Interfaces.Messaging;
 using SilentMoon.Application.Interfaces.Services;
-using SilentMoon.Application.Messages;
 using System;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SilentMoon.Application.Services
+namespace SilentMoon.Infrastructure.Persistence.Services
 {
     public class OtpSender : IOtpSender
     {
