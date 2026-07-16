@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SilentMoon.Application.Interfaces.Services;
+using SilentMoon.Infrastructure.Persistence.Settings;
 using SilentMoon.WebApi.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -17,6 +22,26 @@ namespace SilentMoon.WebApi.Extensions
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddTransient<IUserService, UserService>();
             services.AddScoped<IProblemResultFactory, ProblemResultFactory>();
+        }
+
+        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtSettings = configuration.GetSection("APIAppSettings:JWTSettings").Get<JWTSettings>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+                    };
+                });
         }
 
         public static void EnableApiVersioning(this IServiceCollection services)
@@ -55,10 +80,10 @@ namespace SilentMoon.WebApi.Extensions
                 {
                     Name = "Authorization",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
                     BearerFormat = "JWT",
-                    Description = "Input your Bearer token in this format - Bearer {your token here} to access this API",
+                    Description = "Paste only the JWT access token, Swagger adds the \"Bearer \" prefix automatically.",
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {

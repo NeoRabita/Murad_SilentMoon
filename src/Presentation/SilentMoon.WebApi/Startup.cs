@@ -24,10 +24,12 @@ namespace SilentMoon.WebApi
         {
             services.DisableDefaultApiValidation();
             services.AddControllers();
+            services.AddRouting(options => options.LowercaseUrls = true);
             services.AddHttpContextAccessor();
             services.AddApplicationLayer();
             services.AddPersistenceRegistration(Configuration);
             services.AddPersistenceApiServices(Configuration);
+            services.AddJwtAuthentication(Configuration);
             services.AddSwaggerExtension();
             services.AddLocalization();
             services.AddServiceExtension();

@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Mail;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using SilentMoon.Application.DTOs.Email;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Infrastructure.Persistence.Settings;
+using System;
+using System.Net;
+using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace SilentMoon.Infrastructure.Persistence.Services
 {
@@ -21,32 +20,23 @@ namespace SilentMoon.Infrastructure.Persistence.Services
 
         public async Task SendAsync(EmailRequest request)
         {
-            try
+
+            var mail = new MailMessage();
+            mail.From = new MailAddress(request.From ?? _apiSettings.MailSettings.EmailFrom, _apiSettings.MailSettings.DisplayName);
+            mail.To.Add(request.To);
+            mail.Subject = request.Subject;
+            var htmlView = AlternateView.CreateAlternateViewFromString(request.Body, null, "text/html");
+            mail.IsBodyHtml = true;
+            mail.AlternateViews.Add(htmlView);
+            using (var smtpClient = new SmtpClient(_apiSettings.MailSettings.SmtpHost, _apiSettings.MailSettings.SmtpPort))
             {
-                var mail = new MailMessage();
-                mail.From = new MailAddress(request.From ?? _apiSettings.MailSettings.EmailFrom, _apiSettings.MailSettings.DisplayName);
-                mail.To.Add(request.To);
-                mail.Subject = request.Subject;
-                var htmlView = AlternateView.CreateAlternateViewFromString(request.Body, null, "text/html");
-                mail.IsBodyHtml = true;
-                mail.AlternateViews.Add(htmlView);
-                using (var smtpClient = new SmtpClient(_apiSettings.MailSettings.SmtpHost, _apiSettings.MailSettings.SmtpPort))
-                {
-                    smtpClient.Credentials = new NetworkCredential(_apiSettings.MailSettings.SmtpUser, _apiSettings.MailSettings.SmtpPass);
-                    smtpClient.EnableSsl = _apiSettings.MailSettings.SSL;
-                    await smtpClient.SendMailAsync(mail);
-                }
-            }
-            catch (Exception e)
-            {
-                throw;
+                smtpClient.Credentials = new NetworkCredential(_apiSettings.MailSettings.SmtpUser, _apiSettings.MailSettings.SmtpPass);
+                smtpClient.EnableSsl = _apiSettings.MailSettings.SSL;
+                await smtpClient.SendMailAsync(mail);
             }
         }
 
-        public async Task SendOtpEmailAsync(
-    string email,
-    string name,
-    string otp)
+        public async Task SendOtpEmailAsync(string email, string name, string otp)
         {
             await SendAsync(new EmailRequest
             {
@@ -54,15 +44,19 @@ namespace SilentMoon.Infrastructure.Persistence.Services
 
                 Subject = "Confirm your account",
 
-                Body = $@"
-            <h2>Welcome {name}</h2>
+                Body = $@"<h2>Welcome {name}</h2><p>Your verification code:</p><h1>{otp}</h1><p>Expires in 10 minutes.</p>"
+            });
+        }
 
-            <p>Your verification code:</p>
+        public async Task SendReminderEmailAsync(string email, string name, TimeSpan time)
+        {
+            await SendAsync(new EmailRequest
+            {
+                To = email,
 
-            <h1>{otp}</h1>
+                Subject = "Xatırlatma",
 
-            <p>Expires in 10 minutes.</p>
-        "
+                Body = $@"<h2>Salam {name}</h2><p>Xatırlatma vaxtınız çatdı: {time:hh\:mm}</p>"
             });
         }
     }

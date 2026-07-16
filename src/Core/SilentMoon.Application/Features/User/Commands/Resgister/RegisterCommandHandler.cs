@@ -55,6 +55,8 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
 
             await userRepo.AddAsync(user, ct);
 
+            await _uow.SaveChangesAsync(ct);
+
             await _otpSender.SendAsync(user.Id, user.Email, user.FirstName, ct);
 
             return Result.Success();

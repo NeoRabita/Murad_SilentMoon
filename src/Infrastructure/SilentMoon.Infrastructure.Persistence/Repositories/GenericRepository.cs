@@ -1,15 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using SilentMoon.Application.Interfaces.Repositories;
+using SilentMoon.Domain.Common;
 using SilentMoon.Infrastructure.Persistence.Contexts;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SilentMoon.Infrastructure.Persistence.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         protected readonly AppDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
@@ -61,6 +63,14 @@ namespace SilentMoon.Infrastructure.Persistence.Repositories
         public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
+        }
+
+        public virtual async Task<IEnumerable<T>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync(cancellationToken);
         }
     }
 }

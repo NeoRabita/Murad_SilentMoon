@@ -1,3 +1,4 @@
+using SilentMoon.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -6,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Interfaces.Repositories
 {
-    public interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<T> where T : BaseEntity
     {
         Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<T>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default);
 
         Task AddAsync(T entity, CancellationToken cancellationToken = default);
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using SilentMoon.Application.Interfaces.Repositories;
+using SilentMoon.Domain.Common;
 using SilentMoon.Infrastructure.Persistence.Contexts;
 using SilentMoon.Infrastructure.Persistence.Repositories;
 using System;
@@ -22,7 +23,7 @@ public class Uow : IUow
 
 
     public IGenericRepository<T> GetRepository<T>()
-        where T : class
+        where T : BaseEntity
     {
         if (_repositories.ContainsKey(typeof(T)))
         {

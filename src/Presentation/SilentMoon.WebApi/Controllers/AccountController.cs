@@ -47,12 +47,10 @@ namespace SilentMoon.WebApi.Controllers
         public async Task<IResult> RefreshToken(
         [FromBody] RefreshTokenRequest request)
         {
-            var result =
-                await Dispatcher.Send(
-                    new RefreshTokenCommand
-                    {
-                        RefreshToken = request.RefreshToken
-                    });
+            var result = await Dispatcher.Send(new RefreshTokenCommand
+            {
+                RefreshToken = request.RefreshToken
+            });
 
             return HandleResult(result);
         }
@@ -61,11 +59,10 @@ namespace SilentMoon.WebApi.Controllers
         public async Task<IResult> ResendOtp(
         [FromBody] ResendOtpRequest command)
         {
-            var result =
-                await Dispatcher.Send(new ResendOtpCommand
-                {
-                    Email = command.Email
-                });
+            var result = await Dispatcher.Send(new ResendOtpCommand
+            {
+                Email = command.Email
+            });
 
             return HandleResult(result);
         }
@@ -74,8 +71,7 @@ namespace SilentMoon.WebApi.Controllers
         public async Task<IResult> GoogleLogin(
         [FromBody] GoogleLoginCommand command)
         {
-            var result =
-                await Dispatcher.Send(command);
+            var result = await Dispatcher.Send(command);
 
             return HandleResult(result);
         }

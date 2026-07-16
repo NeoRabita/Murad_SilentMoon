@@ -57,6 +57,8 @@ namespace SilentMoon.Infrastructure.Persistence
            
             services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
             services.AddHostedService<OtpEmailConsumer>();
+            services.AddHostedService<ReminderSchedulerService>();
+            services.AddHostedService<ReminderEmailConsumer>();
 
             RegisterDapperDomainMappings();
         }

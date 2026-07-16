@@ -1,11 +1,7 @@
-﻿using SilentMoon.Application.Interfaces.Authentication;
+﻿using Microsoft.AspNetCore.Http;
+using SilentMoon.Application.Interfaces.Authentication;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilentMoon.Infrastructure.Persistence.Services
 {
@@ -25,7 +21,12 @@ namespace SilentMoon.Infrastructure.Persistence.Services
                 var value = _httpContextAccessor.HttpContext?.User
                     .FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                return int.Parse(value!);
+                if (!int.TryParse(value, out var userId))
+                {
+                    throw new InvalidOperationException("No authenticated user found in the current request.");
+                }
+
+                return userId;
             }
         }
     }
