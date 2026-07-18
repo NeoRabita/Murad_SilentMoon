@@ -3,15 +3,12 @@ using SilentMoon.Application.Features.User.Commands.Login;
 using SilentMoon.Application.Interfaces.Authentication;
 using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.User.Commands.RefreshToken
 {
-    public class RefreshTokenCommandHandler: ICommandHandler<RefreshTokenCommand, LoginResponse>
+    public class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, LoginResponse>
     {
         private readonly IUow _uow;
         private readonly ITokenGeneratorService _tokenGenerator;
@@ -26,11 +23,11 @@ namespace SilentMoon.Application.Features.User.Commands.RefreshToken
         }
 
 
-        public async Task<Result<LoginResponse>> Handle(RefreshTokenCommand command,CancellationToken ct)
+        public async Task<Result<LoginResponse>> Handle(RefreshTokenCommand command, CancellationToken ct)
         {
             var refreshRepo = _uow.GetRepository<Domain.Entities.RefreshToken>();
 
-            var refreshToken =  await refreshRepo.FirstOrDefaultAsync(x =>x.Token == command.RefreshToken,ct);
+            var refreshToken = await refreshRepo.FirstOrDefaultAsync(x => x.Token == command.RefreshToken, ct);
 
 
             if (refreshToken == null)
@@ -58,7 +55,7 @@ namespace SilentMoon.Application.Features.User.Commands.RefreshToken
 
             var userRepo = _uow.GetRepository<ApplicationUser>();
 
-            var user =await userRepo.GetByIdAsync(refreshToken.ApplicationUserId,ct);
+            var user = await userRepo.GetByIdAsync(refreshToken.ApplicationUserId, ct);
 
             if (user == null)
             {
@@ -67,11 +64,9 @@ namespace SilentMoon.Application.Features.User.Commands.RefreshToken
                     "User not found");
             }
 
-            var claims =await _tokenGenerator.CreateClaims(user);
+            var accessToken = await _tokenGenerator.GenerateJwtAccessTokenAsync(user);
 
-            var accessToken =await _tokenGenerator.GenerateJwtAccessTokenAsync(claims);
-
-            var newRefreshToken =await _tokenGenerator.GenerateRefreshTokenAsync(claims,user.Id);
+            var (newRefreshToken, newRefreshTokenExpires) = await _tokenGenerator.GenerateRefreshTokenAsync();
 
             await refreshRepo.AddAsync(
                 new Domain.Entities.RefreshToken
@@ -80,8 +75,7 @@ namespace SilentMoon.Application.Features.User.Commands.RefreshToken
 
                     Token = newRefreshToken,
 
-                    Expires =
-                        DateTime.UtcNow.AddDays(7)
+                    Expires = newRefreshTokenExpires
                 },
                 ct);
 

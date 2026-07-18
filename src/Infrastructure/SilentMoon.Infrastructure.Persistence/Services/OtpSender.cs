@@ -30,7 +30,7 @@ namespace SilentMoon.Infrastructure.Persistence.Services
                 .ToString();
         }
 
-        public async Task SendAsync(int userId, string email, string firstName, CancellationToken ct = default)
+        public async Task SendAsync(string email, string firstName, CancellationToken ct = default)
         {
             var otpCode = GenerateOtp();
 
@@ -40,7 +40,6 @@ namespace SilentMoon.Infrastructure.Persistence.Services
 
             var message = new OtpEmailMessage
             {
-                UserId = userId,
                 Email = email,
                 FirstName = firstName,
                 OtpCode = otpCode

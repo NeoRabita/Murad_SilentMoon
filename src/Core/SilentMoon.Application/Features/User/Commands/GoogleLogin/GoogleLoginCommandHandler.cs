@@ -80,11 +80,9 @@ namespace SilentMoon.Application.Features.User.Commands.GoogleLogin
 
             }
 
-            var claims = await _token.CreateClaims(user);
+            var access = await _token.GenerateJwtAccessTokenAsync(user);
 
-            var access = await _token.GenerateJwtAccessTokenAsync(claims);
-
-            var refresh = await _token.GenerateRefreshTokenAsync(claims, user.Id);
+            var (refresh, _) = await _token.GenerateRefreshTokenAsync();
 
 
             return new LoginResponse

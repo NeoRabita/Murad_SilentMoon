@@ -42,7 +42,7 @@ namespace SilentMoon.Application.Features.User.Commands.Otp
                     "Email already confirmed");
             }
 
-            await _otpSender.SendAsync(user.Id, user.Email, user.FirstName, ct);
+            await _otpSender.SendAsync(user.Email, user.FirstName, ct);
 
             return Result.Success();
         }

@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SilentMoon.Application.Interfaces.Authentication;
-using SilentMoon.Application.Interfaces.Security;
-using SilentMoon.Domain.Entities;
 using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
 using SilentMoon.Infrastructure.Persistence.Settings;
 using System;
@@ -26,7 +24,7 @@ namespace SilentMoon.Infrastructure.Persistence.Services
         }
 
 
-        public Task<List<Claim>> CreateClaims(
+        public Task<string> GenerateJwtAccessTokenAsync(
             ApplicationUser user)
         {
             var claims = new List<Claim>
@@ -44,15 +42,6 @@ namespace SilentMoon.Infrastructure.Persistence.Services
                     user.UserName)
             };
 
-
-            return Task.FromResult(claims);
-        }
-
-
-
-        public Task<string> GenerateJwtAccessTokenAsync(
-            List<Claim> claims)
-        {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.JWTSettings.Key));
 
 
@@ -83,15 +72,13 @@ namespace SilentMoon.Infrastructure.Persistence.Services
 
 
 
-        public Task<string> GenerateRefreshTokenAsync(
-            List<Claim> claims,
-            int userId)
+        public Task<(string Token, DateTime Expires)> GenerateRefreshTokenAsync()
         {
-            var refreshToken =
-                Guid.NewGuid().ToString();
+            var refreshToken =Guid.NewGuid().ToString();
 
+            var expires =DateTime.UtcNow.AddDays(_settings.JWTSettings.RefreshTokenDuration);
 
-            return Task.FromResult(refreshToken);
+            return Task.FromResult((refreshToken, expires));
         }
     }
 }
