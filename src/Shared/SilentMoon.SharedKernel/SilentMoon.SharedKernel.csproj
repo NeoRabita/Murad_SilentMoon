@@ -25,5 +25,7 @@
 		<EmbeddedResource Update="Resources\Messages.ru.resx">
 			<DependentUpon>Messages.resx</DependentUpon>
 		</EmbeddedResource>
+
+		<EmbeddedResource Include="Resources\Emails\*.html" />
 	</ItemGroup>
 </Project>

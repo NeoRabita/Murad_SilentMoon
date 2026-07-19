@@ -2,7 +2,9 @@ using Microsoft.Extensions.Options;
 using SilentMoon.Application.DTOs.Email;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Infrastructure.Persistence.Settings;
+using SilentMoon.SharedKernel.Resources;
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -36,39 +38,70 @@ namespace SilentMoon.Infrastructure.Persistence.Services
             }
         }
 
+        private static string LoadTemplate(string fileName)
+        {
+            var assembly = typeof(Messages).Assembly;
+            var resourceName = $"SilentMoon.SharedKernel.Resources.Emails.{fileName}";
+
+            using var stream = assembly.GetManifestResourceStream(resourceName)
+                ?? throw new FileNotFoundException($"Email template not found: {resourceName}");
+
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+
+        private static string BuildEmailHtml(string contentHtml)
+        {
+            return LoadTemplate("_Layout.html")
+                .Replace("{{CONTENT}}", contentHtml)
+                .Replace("{{YEAR}}", DateTime.UtcNow.Year.ToString());
+        }
+
         public async Task SendOtpEmailAsync(string email, string name, string otp)
         {
+            var content = LoadTemplate("OtpVerification.html")
+                .Replace("{{NAME}}", name)
+                .Replace("{{OTP}}", otp);
+
             await SendAsync(new EmailRequest
             {
                 To = email,
 
-                Subject = "Confirm your account",
+                Subject = "SilentMoon — Hesab təsdiqi",
 
-                Body = $@"<h2>Welcome {name}</h2><p>Your verification code:</p><h1>{otp}</h1><p>Expires in 10 minutes.</p>"
+                Body = BuildEmailHtml(content)
             });
         }
 
         public async Task SendReminderEmailAsync(string email, string name, TimeSpan time)
         {
+            var content = LoadTemplate("Reminder.html")
+                .Replace("{{NAME}}", name)
+                .Replace("{{TIME}}", time.ToString(@"hh\:mm"));
+
             await SendAsync(new EmailRequest
             {
                 To = email,
 
-                Subject = "Xatırlatma",
+                Subject = "SilentMoon — Xatırlatma",
 
-                Body = $@"<h2>Salam {name}</h2><p>Xatırlatma vaxtınız çatdı: {time:hh\:mm}</p>"
+                Body = BuildEmailHtml(content)
             });
         }
 
         public async Task SendForgotPasswordEmailAsync(string email, string name, string otp)
         {
+            var content = LoadTemplate("ForgotPassword.html")
+                .Replace("{{NAME}}", name)
+                .Replace("{{OTP}}", otp);
+
             await SendAsync(new EmailRequest
             {
                 To = email,
 
-                Subject = "Şifrə sıfırlama",
+                Subject = "SilentMoon — Şifrə sıfırlama",
 
-                Body = $@"<h2>Salam {name}</h2><p>Şifrənizi sıfırlamaq üçün kod:</p><h1>{otp}</h1><p>10 dəqiqə ərzində etibarlıdır.</p>"
+                Body = BuildEmailHtml(content)
             });
         }
     }
