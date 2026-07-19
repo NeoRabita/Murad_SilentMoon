@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SilentMoon.Application.Features.Accounts.Commands.ResendOtp;
+using SilentMoon.Application.Features.User.Commands.ForgotPassword;
 using SilentMoon.Application.Features.User.Commands.GoogleLogin;
 using SilentMoon.Application.Features.User.Commands.Login;
 using SilentMoon.Application.Features.User.Commands.Otp;
 using SilentMoon.Application.Features.User.Commands.RefreshToken;
 using SilentMoon.Application.Features.User.Commands.Resgister;
+using SilentMoon.Application.Features.User.Commands.ResetPassword;
 using SilentMoon.Application.Features.User.Commands.VerifyEmail;
 using System.Threading.Tasks;
 
@@ -70,6 +72,24 @@ namespace SilentMoon.WebApi.Controllers
         [HttpPost("google-login")]
         public async Task<IResult> GoogleLogin(
         [FromBody] GoogleLoginCommand command)
+        {
+            var result = await Dispatcher.Send(command);
+
+            return HandleResult(result);
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IResult> ForgotPassword(
+        [FromBody] ForgotPasswordCommand command)
+        {
+            var result = await Dispatcher.Send(command);
+
+            return HandleResult(result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IResult> ResetPassword(
+        [FromBody] ResetPasswordCommand command)
         {
             var result = await Dispatcher.Send(command);
 

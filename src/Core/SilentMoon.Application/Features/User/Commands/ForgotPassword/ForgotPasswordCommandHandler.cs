@@ -1,25 +1,24 @@
 using Application.Abstractions.Messaging;
 using SilentMoon.Application.Common.Extensions;
-using SilentMoon.Application.Features.Accounts.Commands.ResendOtp;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities.SilentMoon.Domain.Entities;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SilentMoon.Application.Features.User.Commands.Otp
+namespace SilentMoon.Application.Features.User.Commands.ForgotPassword
 {
-    public class ResendOtpCommandHandler : ICommandHandler<ResendOtpCommand>
+    public class ForgotPasswordCommandHandler : ICommandHandler<ForgotPasswordCommand>
     {
         private readonly IUow _uow;
         private readonly IOtpSender _otpSender;
 
-        public ResendOtpCommandHandler(IUow uow, IOtpSender otpSender)
+        public ForgotPasswordCommandHandler(IUow uow, IOtpSender otpSender)
         {
             _uow = uow;
             _otpSender = otpSender;
         }
 
-        public async Task<Result> Handle(ResendOtpCommand command, CancellationToken ct)
+        public async Task<Result> Handle(ForgotPasswordCommand command, CancellationToken ct)
         {
             var userRepo = _uow.GetRepository<ApplicationUser>();
 
@@ -30,12 +29,7 @@ namespace SilentMoon.Application.Features.User.Commands.Otp
                 return Error.NotFound("User", "User not found");
             }
 
-            if (user.IsEmailConfirmed)
-            {
-                return Error.Validation("Email", "Email already confirmed");
-            }
-
-            await _otpSender.SendAsync(user.Email, user.FirstName, CacheExtensions.EmailVerificationPurpose, ct);
+            await _otpSender.SendAsync(user.Email, user.FirstName, CacheExtensions.ForgotPasswordPurpose, ct);
 
             return Result.Success();
         }

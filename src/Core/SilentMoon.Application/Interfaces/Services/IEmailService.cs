@@ -17,5 +17,10 @@ namespace SilentMoon.Application.Interfaces.Services
       string email,
       string name,
       TimeSpan time);
+
+        Task SendForgotPasswordEmailAsync(
+      string email,
+      string name,
+      string otp);
     }
 }

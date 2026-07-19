@@ -1,4 +1,5 @@
 using Application.Abstractions.Messaging;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Interfaces.Logging;
 using SilentMoon.Application.Interfaces.Security;
 using SilentMoon.Application.Interfaces.Services;
@@ -46,7 +47,7 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
 
             await userRepo.AddAsync(user, ct);
 
-            await _otpSender.SendAsync(user.Email, user.FirstName, ct);
+            await _otpSender.SendAsync(user.Email, user.FirstName, CacheExtensions.EmailVerificationPurpose, ct);
 
             return Result.Success();
         }

@@ -39,7 +39,7 @@ namespace SilentMoon.Application.Features.User.Commands.VerifyEmail
                 return Error.Validation("Email", "Already confirmed");
             }
 
-            var key = CacheExtensions.OtpCacheKey(command.Email);
+            var key = CacheExtensions.OtpCacheKey(CacheExtensions.EmailVerificationPurpose, command.Email);
 
             var cachedHash = await _cacheService.GetAsync<string>(key);
 

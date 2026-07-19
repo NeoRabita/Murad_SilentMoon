@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.DTOs.Otp;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Infrastructure.Persistence.Settings;
@@ -22,10 +23,20 @@ namespace SilentMoon.Infrastructure.Persistence.Messaging
         {
             var emailService = scopedProvider.GetRequiredService<IEmailService>();
 
-            await emailService.SendOtpEmailAsync(
-                message.Email,
-                message.FirstName,
-                message.OtpCode);
+            if (message.Purpose == CacheExtensions.ForgotPasswordPurpose)
+            {
+                await emailService.SendForgotPasswordEmailAsync(
+                    message.Email,
+                    message.FirstName,
+                    message.OtpCode);
+            }
+            else
+            {
+                await emailService.SendOtpEmailAsync(
+                    message.Email,
+                    message.FirstName,
+                    message.OtpCode);
+            }
         }
     }
 }

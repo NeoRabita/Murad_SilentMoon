@@ -59,5 +59,17 @@ namespace SilentMoon.Infrastructure.Persistence.Services
                 Body = $@"<h2>Salam {name}</h2><p>Xatırlatma vaxtınız çatdı: {time:hh\:mm}</p>"
             });
         }
+
+        public async Task SendForgotPasswordEmailAsync(string email, string name, string otp)
+        {
+            await SendAsync(new EmailRequest
+            {
+                To = email,
+
+                Subject = "Şifrə sıfırlama",
+
+                Body = $@"<h2>Salam {name}</h2><p>Şifrənizi sıfırlamaq üçün kod:</p><h1>{otp}</h1><p>10 dəqiqə ərzində etibarlıdır.</p>"
+            });
+        }
     }
 }

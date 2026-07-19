@@ -15,9 +15,7 @@ namespace SilentMoon.Infrastructure.Persistence.Services
         private readonly ICacheService _cacheService;
         private readonly IMessagePublisher _publisher;
 
-        public OtpSender(
-            ICacheService cacheService,
-            IMessagePublisher publisher)
+        public OtpSender(ICacheService cacheService,IMessagePublisher publisher)
         {
             _cacheService = cacheService;
             _publisher = publisher;
@@ -30,19 +28,20 @@ namespace SilentMoon.Infrastructure.Persistence.Services
                 .ToString();
         }
 
-        public async Task SendAsync(string email, string firstName, CancellationToken ct = default)
+        public async Task SendAsync(string email, string firstName, string purpose, CancellationToken ct = default)
         {
             var otpCode = GenerateOtp();
 
             var otpHash = OtpHasher.Hash(otpCode);
 
-            await _cacheService.SetAsync(CacheExtensions.OtpCacheKey(email),otpHash,TimeSpan.FromMinutes(10));
+            await _cacheService.SetAsync(CacheExtensions.OtpCacheKey(purpose, email),otpHash,TimeSpan.FromMinutes(10));
 
             var message = new OtpEmailMessage
             {
                 Email = email,
                 FirstName = firstName,
-                OtpCode = otpCode
+                OtpCode = otpCode,
+                Purpose = purpose
             };
 
             await _publisher.PublishAsync(message, "otp.email", ct);

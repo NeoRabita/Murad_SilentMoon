@@ -5,6 +5,6 @@ namespace SilentMoon.Application.Interfaces.Services
 {
     public interface IOtpSender
     {
-        Task SendAsync(string email, string firstName, CancellationToken ct = default);
+        Task SendAsync(string email, string firstName, string purpose, CancellationToken ct = default);
     }
 }

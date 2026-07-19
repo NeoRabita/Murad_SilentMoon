@@ -7,5 +7,7 @@ namespace SilentMoon.Application.DTOs.Otp
         public string FirstName { get; set; }
 
         public string OtpCode { get; set; }
+
+        public string Purpose { get; set; }
     }
 }
