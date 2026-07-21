@@ -32,7 +32,7 @@ namespace SilentMoon.WebApi.Extensions
                 {
                     Title = $"{assemblyName} - v{description.ApiVersion} {envBadge}",
                     Version = description.ApiVersion.ToString(),
-                    Description = "This Api will be responsible for overall data distribution and authorization. Created by Tunay <3",
+                    Description = "This Api will be responsible for overall data distribution and authorization. Created by Murad <3",
                     Contact = new OpenApiContact
                     {
                         Name = "nijat.net",
