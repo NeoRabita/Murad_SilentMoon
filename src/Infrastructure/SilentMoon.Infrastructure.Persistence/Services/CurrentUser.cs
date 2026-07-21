@@ -29,5 +29,9 @@ namespace SilentMoon.Infrastructure.Persistence.Services
                 return userId;
             }
         }
+
+        public string UserName =>
+            _httpContextAccessor.HttpContext?.User
+                .FindFirst(ClaimTypes.Name)?.Value;
     }
 }

@@ -7,5 +7,6 @@ namespace SilentMoon.Infrastructure.Persistence.Settings
         public string SecretKey { get; set; }
         public string BucketName { get; set; }
         public bool UseSSL { get; set; }
+        public int PresignedUrlExpiryInSeconds { get; set; }
     }
 }

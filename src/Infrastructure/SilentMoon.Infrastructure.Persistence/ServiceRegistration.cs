@@ -61,6 +61,7 @@ namespace SilentMoon.Infrastructure.Persistence
             services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
             services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
             services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+            services.AddScoped<IFileStorageService, MinioFileStorageService>();
             services.AddScoped<IOtpSender, OtpSender>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ICurrentUser, CurrentUser>();
