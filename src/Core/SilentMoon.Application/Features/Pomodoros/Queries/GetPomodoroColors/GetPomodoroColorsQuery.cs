@@ -26,7 +26,7 @@ namespace SilentMoon.Application.Features.Pomodoros.Queries.GetPomodoroColors
 
         private async Task<string> GetTest()
         {
-            return await Task.FromResult("salam22222");
+            return await Task.FromResult("salam2222");
         }
 
         public async Task<Result<List<PomodoroColors>>> Handle(GetPomodoroColorsQuery query, CancellationToken cancellationToken)
