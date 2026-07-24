@@ -15,7 +15,6 @@ namespace SilentMoon.WebApi.Controllers
 {
     public class AccountController : BaseController
     {
-
         [HttpPost("register")]
         public async Task<IResult> Register(
             [FromBody] RegisterCommand command)
