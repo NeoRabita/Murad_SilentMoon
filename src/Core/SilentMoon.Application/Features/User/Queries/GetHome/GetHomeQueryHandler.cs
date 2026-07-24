@@ -72,7 +72,6 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
 
             return responses;
         }
-
         private async Task<ContentResponse> ToResponseAsync(
             Content content,
             CancellationToken ct) => new()
