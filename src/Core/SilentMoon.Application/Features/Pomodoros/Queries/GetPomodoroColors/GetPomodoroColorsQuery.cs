@@ -32,7 +32,6 @@ namespace SilentMoon.Application.Features.Pomodoros.Queries.GetPomodoroColors
         public async Task<Result<List<PomodoroColors>>> Handle(GetPomodoroColorsQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInformation("GetPomodoroColors strated.");
-
             var cacheTest = await _cacheService.GetOrAddAsync($"user_c2bb8b5e-3898-4141-9f3c-ebc9787bf7bb", GetTest);
 
             if (cacheTest == null)
