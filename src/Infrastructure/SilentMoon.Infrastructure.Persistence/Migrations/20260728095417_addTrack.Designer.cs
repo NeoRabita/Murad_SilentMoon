@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using SilentMoon.Infrastructure.Persistence.Contexts;
@@ -11,9 +12,11 @@ using SilentMoon.Infrastructure.Persistence.Contexts;
 namespace SilentMoon.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260728095417_addTrack")]
+    partial class addTrack
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,52 +62,6 @@ namespace SilentMoon.Infrastructure.Persistence.Migrations
                     b.ToTable("Contents");
                 });
 
-            modelBuilder.Entity("SilentMoon.Domain.Entities.ContentTopic", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ContentId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<int>("TopicId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContentId");
-
-                    b.HasIndex("TopicId");
-
-                    b.ToTable("ContentTopics");
-                });
-
-            modelBuilder.Entity("SilentMoon.Domain.Entities.Favorite", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationUserId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<int>("ContentId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ContentId");
-
-                    b.ToTable("Favorites");
-                });
-
             modelBuilder.Entity("SilentMoon.Domain.Entities.Otp", b =>
                 {
                     b.Property<int>("Id")
@@ -130,35 +87,6 @@ namespace SilentMoon.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Otp");
-                });
-
-            modelBuilder.Entity("SilentMoon.Domain.Entities.PlaybackProgress", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationUserId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<int>("PositionSeconds")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<int>("TrackId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<DateTime>("UpdatedAtUtc")
-                        .HasColumnType("TIMESTAMP(7)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("TrackId");
-
-                    b.ToTable("PlaybackProgresses");
                 });
 
             modelBuilder.Entity("SilentMoon.Domain.Entities.RefreshToken", b =>
@@ -325,44 +253,6 @@ namespace SilentMoon.Infrastructure.Persistence.Migrations
                     b.ToTable("UserTopics");
                 });
 
-            modelBuilder.Entity("SilentMoon.Domain.Entities.ContentTopic", b =>
-                {
-                    b.HasOne("SilentMoon.Domain.Entities.Content", "Content")
-                        .WithMany()
-                        .HasForeignKey("ContentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SilentMoon.Domain.Entities.Topic", "Topic")
-                        .WithMany()
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Content");
-
-                    b.Navigation("Topic");
-                });
-
-            modelBuilder.Entity("SilentMoon.Domain.Entities.Favorite", b =>
-                {
-                    b.HasOne("SilentMoon.Domain.Entities.SilentMoon.Domain.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SilentMoon.Domain.Entities.Content", "Content")
-                        .WithMany()
-                        .HasForeignKey("ContentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Content");
-                });
-
             modelBuilder.Entity("SilentMoon.Domain.Entities.Otp", b =>
                 {
                     b.HasOne("SilentMoon.Domain.Entities.SilentMoon.Domain.Entities.ApplicationUser", "User")
@@ -372,25 +262,6 @@ namespace SilentMoon.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SilentMoon.Domain.Entities.PlaybackProgress", b =>
-                {
-                    b.HasOne("SilentMoon.Domain.Entities.SilentMoon.Domain.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SilentMoon.Domain.Entities.Track", "Track")
-                        .WithMany()
-                        .HasForeignKey("TrackId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Track");
                 });
 
             modelBuilder.Entity("SilentMoon.Domain.Entities.RefreshToken", b =>

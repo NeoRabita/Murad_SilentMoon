@@ -72,5 +72,34 @@ namespace SilentMoon.Infrastructure.Persistence.Repositories
                 .Where(x => ids.Contains(x.Id))
                 .ToListAsync(cancellationToken);
         }
+
+        public virtual async Task<(List<T> Items, int TotalCount)> GetPagedAsync(
+            Expression<Func<T, bool>>? predicate,
+            Expression<Func<T, object>> orderBy,
+            bool ascending,
+            int page,
+            int limit,
+            CancellationToken cancellationToken = default)
+        {
+            var query = _dbSet.AsNoTracking();
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var ordered = ascending
+                ? query.OrderBy(orderBy)
+                : query.OrderByDescending(orderBy);
+
+            var items = await ordered
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
     }
 }

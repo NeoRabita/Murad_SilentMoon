@@ -27,5 +27,13 @@ namespace SilentMoon.Infrastructure.Persistence.Contexts
         public DbSet<Reminder> Reminders { get; set; }
 
         public DbSet<Content> Contents { get; set; }
+
+        public DbSet<Track> Tracks { get; set; }
+
+        public DbSet<ContentTopic> ContentTopics { get; set; }
+
+        public DbSet<Favorite> Favorites { get; set; }
+
+        public DbSet<PlaybackProgress> PlaybackProgresses { get; set; }
     }
 }

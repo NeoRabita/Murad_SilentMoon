@@ -13,17 +13,13 @@ namespace SilentMoon.Infrastructure.Persistence.Services
         private readonly IMinioClient _minioClient;
         private readonly MinioSettings _settings;
 
-        public MinioFileStorageService(
-            IMinioClient minioClient,
-            IOptions<MinioSettings> settings)
+        public MinioFileStorageService(IMinioClient minioClient,IOptions<MinioSettings> settings)
         {
             _minioClient = minioClient;
             _settings = settings.Value;
         }
 
-        public async Task<string> GetPresignedUrlAsync(
-            string objectKey,
-            CancellationToken ct = default)
+        public async Task<string> GetPresignedUrlAsync(string objectKey,CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(objectKey))
             {

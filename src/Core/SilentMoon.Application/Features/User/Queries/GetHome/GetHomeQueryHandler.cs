@@ -30,24 +30,28 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
 
             var contents = await contentRepo.GetAllAsync(ct);
 
-            var featured = await ToResponseListAsync(contents.Where(x => x.IsFeatured).OrderBy(x => x.SortOrder),ct);
-
-            var recommended = await ToResponseListAsync(contents.Where(x => x.IsRecommended).OrderBy(x => x.SortOrder),ct);
-
             var dailyThoughtContent = contents
                 .Where(x => x.IsDailyThought)
                 .OrderBy(x => x.SortOrder)
                 .FirstOrDefault();
 
-            var dailyThought = dailyThoughtContent == null? null: await ToResponseAsync(dailyThoughtContent, ct);
+            var featuredTask = ToResponseListAsync(contents.Where(x => x.IsFeatured).OrderBy(x => x.SortOrder), ct);
+
+            var recommendedTask = ToResponseListAsync(contents.Where(x => x.IsRecommended).OrderBy(x => x.SortOrder), ct);
+
+            var dailyThoughtTask = dailyThoughtContent == null
+                ? Task.FromResult<ContentResponse>(null)
+                : ToResponseAsync(dailyThoughtContent, ct);
+
+            await Task.WhenAll(featuredTask, recommendedTask, dailyThoughtTask);
 
             return new HomeResponse
             {
                 Greeting = BuildGreeting(_dateTimeService.localTime.Hour),
                 UserName = _currentUser.UserName,
-                Featured = featured,
-                DailyThought = dailyThought,
-                Recommended = recommended
+                Featured = featuredTask.Result,
+                DailyThought = dailyThoughtTask.Result,
+                Recommended = recommendedTask.Result
             };
         }
 
@@ -63,14 +67,9 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
             IEnumerable<Content> contents,
             CancellationToken ct)
         {
-            var responses = new List<ContentResponse>();
+            var responses = await Task.WhenAll(contents.Select(content => ToResponseAsync(content, ct)));
 
-            foreach (var content in contents)
-            {
-                responses.Add(await ToResponseAsync(content, ct));
-            }
-
-            return responses;
+            return responses.ToList();
         }
         private async Task<ContentResponse> ToResponseAsync(
             Content content,

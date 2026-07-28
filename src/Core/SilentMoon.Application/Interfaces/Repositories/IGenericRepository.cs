@@ -23,6 +23,14 @@ namespace SilentMoon.Application.Interfaces.Repositories
        Expression<Func<T, bool>> predicate,
        CancellationToken cancellationToken = default);
 
+        Task<(List<T> Items, int TotalCount)> GetPagedAsync(
+            Expression<Func<T, bool>>? predicate,
+            Expression<Func<T, object>> orderBy,
+            bool ascending,
+            int page,
+            int limit,
+            CancellationToken cancellationToken = default);
+
         void Update(T entity);
 
         void Delete(T entity);
