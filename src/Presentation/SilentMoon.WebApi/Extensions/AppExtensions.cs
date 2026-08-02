@@ -3,14 +3,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using SilentMoon.Infrastructure.Persistence.Services;
 using SilentMoon.SharedKernel.Resources;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Claims;
 
 namespace SilentMoon.WebApi.Extensions
 {
@@ -48,6 +51,77 @@ namespace SilentMoon.WebApi.Extensions
             app.UseRequestLocalization(localizationOptions);
         }
 
+
+        public static void UseCurrentUser(this IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                if (context.User.Identity?.IsAuthenticated == true)
+                {
+                    var currentUser = context.RequestServices.GetRequiredService<CurrentUser>();
+
+                    var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    if (int.TryParse(userIdClaim, out var userId))
+                    {
+                        currentUser.UserId = userId;
+                    }
+
+                    currentUser.UserName = context.User.FindFirst(ClaimTypes.Name)?.Value;
+                }
+
+                await next();
+            });
+        }
+
+        private static readonly HashSet<string> PublicControllers = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Account",
+            "Topics"
+        };
+
+        public static void UseAuthEnforcement(this IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                var controllerName = context.GetEndpoint()?.Metadata
+                    .GetMetadata<ControllerActionDescriptor>()?
+                    .ControllerName;
+
+                if (controllerName == null)
+                {
+                    // Not an MVC controller action (Swagger, static files, etc.) — nothing to protect here.
+                    await next();
+
+                    return;
+                }
+
+                var isPublic = PublicControllers.Contains(controllerName);
+
+                if (!isPublic && context.User.Identity?.IsAuthenticated != true)
+                {
+                    var localizer = context.RequestServices.GetRequiredService<IStringLocalizer<Messages>>();
+
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.ContentType = "application/problem+json";
+
+                    var problemDetails = new
+                    {
+                        type = "https://tools.ietf.org/html/rfc7235#section-3.1",
+                        title = localizer["ErrorType.Unauthorized"].Value,
+                        status = StatusCodes.Status401Unauthorized,
+                        detail = localizer["ErrorType.UnauthorizedDetail"].Value,
+                        errorCode = "Error.Unauthorized"
+                    };
+
+                    await context.Response.WriteAsJsonAsync(problemDetails);
+
+                    return;
+                }
+
+                await next();
+            });
+        }
 
         public static void UseErrorHandling(this IApplicationBuilder app)
         {

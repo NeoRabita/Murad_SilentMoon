@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SilentMoon.Application.Features.Accounts.Commands.ResendOtp;
 using SilentMoon.Application.Features.User.Commands.ForgotPassword;
 using SilentMoon.Application.Features.User.Commands.GoogleLogin;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.WebApi.Controllers
 {
+    [EnableRateLimiting("auth")]
     public class AccountController : BaseController
     {
         [HttpPost("register")]

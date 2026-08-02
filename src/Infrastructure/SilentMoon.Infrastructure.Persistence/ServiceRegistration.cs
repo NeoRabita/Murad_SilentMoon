@@ -64,7 +64,8 @@ namespace SilentMoon.Infrastructure.Persistence
             services.AddScoped<IFileStorageService, MinioFileStorageService>();
             services.AddScoped<IOtpSender, OtpSender>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<ICurrentUser, CurrentUser>();
+            services.AddScoped<CurrentUser>();
+            services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<CurrentUser>());
             services.AddScoped<IDapper, DapperClass>();
             services.AddScoped<IUow, Uow>();
 

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SilentMoon.Application.Features.Favorites.Commands.AddFavorite;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.WebApi.Controllers
 {
-    [Authorize]
     public class FavoritesController : BaseController
     {
         [HttpGet]

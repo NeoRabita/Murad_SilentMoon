@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SilentMoon.Application.Features.Search.Queries.SearchContent;
@@ -6,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.WebApi.Controllers
 {
-    [Authorize]
     public class SearchController : BaseController
     {
         [HttpGet]

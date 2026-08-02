@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SilentMoon.Application.Features.Reminders.Commands.CreateReminder;
@@ -11,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.WebApi.Controllers
 {
-    [Authorize]
     public class OnboardingController : BaseController
     {
         [HttpGet("topics")]

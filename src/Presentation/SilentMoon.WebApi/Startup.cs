@@ -25,7 +25,6 @@ namespace SilentMoon.WebApi
             services.DisableDefaultApiValidation();
             services.AddControllers();
             services.AddRouting(options => options.LowercaseUrls = true);
-            services.AddHttpContextAccessor();
             services.AddApplicationLayer();
             services.AddPersistenceRegistration(Configuration);
             services.AddPersistenceApiServices(Configuration);
@@ -33,6 +32,7 @@ namespace SilentMoon.WebApi
             services.AddSwaggerExtension();
             services.AddLocalization();
             services.AddServiceExtension();
+            services.AddRateLimiting();
             services.EnableApiVersioning();
         }
 
@@ -46,7 +46,10 @@ namespace SilentMoon.WebApi
             app.UseLocalization();
             //app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseRateLimiter();
             app.UseAuthentication();
+            app.UseCurrentUser();
+            app.UseAuthEnforcement();
             app.UseAuthorization();
             app.UseErrorHandling();
             app.UseSwaggerExtension(env, provider);

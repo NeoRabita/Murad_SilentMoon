@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SilentMoon.Application.Features.User.Commands.UpdateMe;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.WebApi.Controllers
 {
-    [Authorize]
     public class MeController : BaseController
     {
         [HttpGet]
