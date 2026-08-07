@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 using SilentMoon.Application.DTOs.Storage;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Infrastructure.Persistence.Settings;
@@ -64,13 +65,21 @@ namespace SilentMoon.Infrastructure.Persistence.Services
 
             var buffer = new MemoryStream();
 
-            await _minioClient.GetObjectAsync(
-                new GetObjectArgs()
-                    .WithBucket(bucketName)
-                    .WithObject(objectKey)
-                    .WithOffsetAndLength(start, length)
-                    .WithCallbackStream(stream => stream.CopyTo(buffer)),
-                ct);
+            try
+            {
+                await _minioClient.GetObjectAsync(
+                    new GetObjectArgs()
+                        .WithBucket(bucketName)
+                        .WithObject(objectKey)
+                        .WithOffsetAndLength(start, length)
+                        .WithCallbackStream(stream => stream.CopyTo(buffer)),
+                    ct);
+            }
+            catch (PartialContentException)
+            {
+                // The MinIO SDK raises this even on a successful ranged (206) read -
+                // the callback stream has already received the bytes by this point.
+            }
 
             buffer.Position = 0;
 
