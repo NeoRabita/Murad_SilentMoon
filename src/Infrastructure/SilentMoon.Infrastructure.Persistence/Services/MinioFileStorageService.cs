@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
-using Minio.Exceptions;
 using SilentMoon.Application.DTOs.Storage;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Infrastructure.Persistence.Settings;
-using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,6 +13,10 @@ namespace SilentMoon.Infrastructure.Persistence.Services
 {
     public class MinioFileStorageService : IFileStorageService
     {
+        // Shared instance - HttpClient is designed to be reused across calls rather
+        // than created per-request (avoids socket exhaustion under load).
+        private static readonly HttpClient HttpClient = new();
+
         private readonly IMinioClient _minioClient;
         private readonly MinioSettings _settings;
 
@@ -44,52 +48,40 @@ namespace SilentMoon.Infrastructure.Persistence.Services
             long? rangeEnd,
             CancellationToken ct = default)
         {
-            var bucketName = BucketNameFor(bucket);
+            // The MinIO .NET SDK's GetObjectAsync throws PartialContentException on a
+            // successful ranged (206) response and doesn't reliably deliver the bytes
+            // through its callback stream in that case. Going through the presigned URL
+            // with a plain HTTP request sidesteps that SDK bug entirely.
+            var presignedUrl = await GetPresignedUrlAsync(bucket, objectKey, ct);
 
-            var stat = await _minioClient.StatObjectAsync(
-                new StatObjectArgs().WithBucket(bucketName).WithObject(objectKey),
-                ct);
+            var request = new HttpRequestMessage(HttpMethod.Get, presignedUrl);
 
-            var totalSize = stat.Size;
-
-            var start = rangeStart ?? 0;
-
-            var end = rangeEnd ?? totalSize - 1;
-
-            if (end >= totalSize)
+            if (rangeStart.HasValue || rangeEnd.HasValue)
             {
-                end = totalSize - 1;
+                request.Headers.Range = new RangeHeaderValue(rangeStart, rangeEnd);
             }
 
-            var length = end - start + 1;
+            var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
 
-            var buffer = new MemoryStream();
+            response.EnsureSuccessStatusCode();
 
-            try
-            {
-                await _minioClient.GetObjectAsync(
-                    new GetObjectArgs()
-                        .WithBucket(bucketName)
-                        .WithObject(objectKey)
-                        .WithOffsetAndLength(start, length)
-                        .WithCallbackStream(stream => stream.CopyTo(buffer)),
-                    ct);
-            }
-            catch (PartialContentException)
-            {
-                // The MinIO SDK raises this even on a successful ranged (206) read -
-                // the callback stream has already received the bytes by this point.
-            }
+            var contentRange = response.Content.Headers.ContentRange;
 
-            buffer.Position = 0;
+            var totalSize = contentRange?.Length ?? response.Content.Headers.ContentLength ?? 0;
+
+            var start = contentRange?.From ?? 0;
+
+            var end = contentRange?.To ?? totalSize - 1;
+
+            var stream = await response.Content.ReadAsStreamAsync(ct);
 
             return new ObjectRangeResult
             {
-                Content = buffer,
+                Content = stream,
                 TotalSize = totalSize,
                 RangeStart = start,
                 RangeEnd = end,
-                ContentType = stat.ContentType
+                ContentType = response.Content.Headers.ContentType?.ToString()
             };
         }
 
