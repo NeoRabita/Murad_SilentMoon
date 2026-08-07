@@ -4,6 +4,7 @@ using Minio.DataModel.Args;
 using SilentMoon.Application.DTOs.Storage;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Infrastructure.Persistence.Settings;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -81,7 +82,8 @@ namespace SilentMoon.Infrastructure.Persistence.Services
                 TotalSize = totalSize,
                 RangeStart = start,
                 RangeEnd = end,
-                ContentType = response.Content.Headers.ContentType?.ToString()
+                ContentType = response.Content.Headers.ContentType?.ToString(),
+                IsPartial = response.StatusCode == HttpStatusCode.PartialContent
             };
         }
 

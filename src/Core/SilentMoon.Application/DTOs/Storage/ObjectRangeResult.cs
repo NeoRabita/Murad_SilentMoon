@@ -13,5 +13,7 @@ namespace SilentMoon.Application.DTOs.Storage
         public long RangeEnd { get; set; }
 
         public string ContentType { get; set; }
+
+        public bool IsPartial { get; set; }
     }
 }

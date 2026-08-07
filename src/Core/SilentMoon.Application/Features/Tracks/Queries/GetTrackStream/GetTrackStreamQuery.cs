@@ -7,8 +7,6 @@ namespace SilentMoon.Application.Features.Tracks.Queries.GetTrackStream
     {
         public int TrackId { get; set; }
 
-        public long? RangeStart { get; set; }
-
-        public long? RangeEnd { get; set; }
+        public string RangeHeader { get; set; }
     }
 }

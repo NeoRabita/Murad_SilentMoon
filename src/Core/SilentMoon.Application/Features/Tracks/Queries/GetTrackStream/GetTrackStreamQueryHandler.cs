@@ -31,12 +31,29 @@ namespace SilentMoon.Application.Features.Tracks.Queries.GetTrackStream
                     "Track not found");
             }
 
+            var (rangeStart, rangeEnd) = ParseRange(query.RangeHeader);
+
             return await _fileStorage.GetObjectRangeAsync(
                 MinioBucket.Tracks,
                 track.AudioUrl,
-                query.RangeStart,
-                query.RangeEnd,
+                rangeStart,
+                rangeEnd,
                 ct);
+        }
+
+        private static (long? Start, long? End) ParseRange(string rangeHeader)
+        {
+            if (string.IsNullOrEmpty(rangeHeader) || !rangeHeader.StartsWith("bytes="))
+            {
+                return (null, null);
+            }
+
+            var parts = rangeHeader.Substring("bytes=".Length).Split('-');
+
+            long? start = parts.Length > 0 && long.TryParse(parts[0], out var s) ? s : null;
+            long? end = parts.Length > 1 && long.TryParse(parts[1], out var e) ? e : null;
+
+            return (start, end);
         }
     }
 }
