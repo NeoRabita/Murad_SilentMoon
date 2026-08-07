@@ -35,11 +35,13 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
                 return Error.Validation("Email", "Email already exists");
             }
 
+            var (firstName, lastName) = SplitName(command.Name);
+
             var user = new ApplicationUser
             {
-                FirstName = command.FirstName,
-                LastName = command.LastName,
-                UserName = command.UserName,
+                FirstName = firstName,
+                LastName = lastName,
+                UserName = command.Name,
                 Email = command.Email,
                 PasswordHash = _passwordHasher.Hash(command.Password),
                 IsEmailConfirmed = false
@@ -50,6 +52,13 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
             await _otpSender.SendAsync(user.Email, user.FirstName, CacheExtensions.EmailVerificationPurpose, ct);
 
             return Result.Success();
+        }
+
+        private static (string FirstName, string LastName) SplitName(string fullName)
+        {
+            var parts = fullName.Trim().Split(' ', 2);
+
+            return parts.Length == 2 ? (parts[0], parts[1]) : (parts[0], string.Empty);
         }
     }
 }

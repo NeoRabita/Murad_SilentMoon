@@ -42,7 +42,7 @@ namespace SilentMoon.Application.Features.Search.Queries.SearchContent
                 Title = content.Title,
                 Category = content.Category.ToString(),
                 Duration = content.Duration,
-                ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(content.ThumbnailUrl, ct)
+                ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)
             }));
 
             return items.ToList();

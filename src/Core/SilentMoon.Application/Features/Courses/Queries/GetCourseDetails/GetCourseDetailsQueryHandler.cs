@@ -45,10 +45,10 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
                 Id = track.Id,
                 Title = track.Title,
                 Duration = track.Duration,
-                AudioUrl = await _fileStorage.GetPresignedUrlAsync(track.AudioUrl, ct)
+                AudioUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Tracks, track.AudioUrl, ct)
             }));
 
-            var thumbnailUrlTask = _fileStorage.GetPresignedUrlAsync(content.ThumbnailUrl, ct);
+            var thumbnailUrlTask = _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct);
 
             await Task.WhenAll(trackResponsesTask, thumbnailUrlTask);
 

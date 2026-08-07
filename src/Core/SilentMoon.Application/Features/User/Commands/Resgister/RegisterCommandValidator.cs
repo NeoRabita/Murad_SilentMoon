@@ -6,18 +6,9 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
     {
         public RegisterCommandValidator()
         {
-            RuleFor(x => x.FirstName)
+            RuleFor(x => x.Name)
                 .NotEmpty()
-                .MaximumLength(50);
-
-            RuleFor(x => x.LastName)
-                .NotEmpty()
-                .MaximumLength(50);
-
-            RuleFor(x => x.UserName)
-                .NotEmpty()
-                .MinimumLength(3)
-                .MaximumLength(30);
+                .MaximumLength(100);
 
             RuleFor(x => x.Email)
                 .NotEmpty()
@@ -27,10 +18,6 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
                 .NotEmpty()
                 .MinimumLength(6)
                 .MaximumLength(100);
-
-            RuleFor(x => x.ConfirmPassword)
-                .NotEmpty()
-                .Equal(x => x.Password);
         }
     }
 }
