@@ -4,40 +4,48 @@ metadata:
   name: silentmoon-webapi
 spec:
   replicas: 3
+
   selector:
     matchLabels:
       app: silentmoon-webapi
+
   template:
     metadata:
       labels:
         app: silentmoon-webapi
+
     spec:
       containers:
         - name: silentmoon-webapi
-          # Make sure this matches the IMAGE_NAME in your TeamCity script
           image: myapi-dev-image:latest
-          # Do not pull from Docker Hub, use the local image
-          imagePullPolicy: Never
+
           ports:
             - containerPort: 8080
+
           env:
             - name: ASPNETCORE_ENVIRONMENT
-              value: "Development"
+              value: "Production"
+
             - name: ASPNETCORE_URLS
               value: "http://+:8080"
+
+          imagePullPolicy: IfNotPresent
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
   name: silentmoon-webapi-service
+
 spec:
-  # Bypass Traefik by using NodePort instead of LoadBalancer
   type: NodePort
+
   selector:
     app: silentmoon-webapi
+
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8080
-      # The explicit port you will open in the browser
       nodePort: 30080
