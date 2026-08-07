@@ -46,12 +46,12 @@ namespace SilentMoon.WebApi
             app.UseLocalization();
             //app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseErrorHandling();
             app.UseRateLimiter();
             app.UseAuthentication();
             app.UseCurrentUser();
             app.UseAuthEnforcement();
             app.UseAuthorization();
-            app.UseErrorHandling();
             app.UseSwaggerExtension(env, provider);
             app.UseEndpoints(endpoints =>
             {

@@ -21,7 +21,7 @@ namespace SilentMoon.WebApi.Extensions
     {
         public static void UseSwaggerExtension(this IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
-            if (env.IsDevelopment() || env.IsStaging())
+            if (env.IsDevelopment() || env.IsStaging() || env.IsProduction())
             {
                 var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
                 app.UseSwagger();
