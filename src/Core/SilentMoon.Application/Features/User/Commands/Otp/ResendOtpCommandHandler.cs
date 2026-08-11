@@ -32,7 +32,7 @@ namespace SilentMoon.Application.Features.User.Commands.Otp
 
             if (user.IsEmailConfirmed)
             {
-                return Error.Validation("Email", "Email already confirmed");
+                return Error.Validation("Email.AlreadyConfirmed", "Email already confirmed");
             }
 
             await _otpSender.SendAsync(user.Email, user.FirstName, CacheExtensions.EmailVerificationPurpose, ct);

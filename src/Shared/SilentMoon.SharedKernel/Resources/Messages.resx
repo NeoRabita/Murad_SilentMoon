@@ -345,6 +345,15 @@
   <data name="Email" xml:space="preserve">
     <value>The email is not in a valid state for this operation.</value>
   </data>
+  <data name="Email.NotConfirmed" xml:space="preserve">
+    <value>Please confirm your email before signing in.</value>
+  </data>
+  <data name="Email.AlreadyConfirmed" xml:space="preserve">
+    <value>This email is already confirmed.</value>
+  </data>
+  <data name="Email.AlreadyExists" xml:space="preserve">
+    <value>An account with this email already exists.</value>
+  </data>
   <data name="OTP" xml:space="preserve">
     <value>The OTP code you entered is either invalid or has expired.</value>
   </data>
@@ -359,5 +368,29 @@
   </data>
   <data name="Reminder.NotFound" xml:space="preserve">
     <value>The requested reminder could not be found.</value>
+  </data>
+  <data name="Greeting.Morning" xml:space="preserve">
+    <value>Good Morning</value>
+  </data>
+  <data name="Greeting.Afternoon" xml:space="preserve">
+    <value>Good Afternoon</value>
+  </data>
+  <data name="Greeting.Evening" xml:space="preserve">
+    <value>Good Evening</value>
+  </data>
+  <data name="Greeting.Night" xml:space="preserve">
+    <value>Good Night</value>
+  </data>
+  <data name="ContentCategory.Course" xml:space="preserve">
+    <value>Course</value>
+  </data>
+  <data name="ContentCategory.Music" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="ContentCategory.Meditation" xml:space="preserve">
+    <value>Meditation</value>
+  </data>
+  <data name="ContentCategory.Sleep" xml:space="preserve">
+    <value>Sleep</value>
   </data>
 </root>

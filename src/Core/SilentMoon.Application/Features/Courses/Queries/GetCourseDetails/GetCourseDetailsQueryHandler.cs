@@ -1,6 +1,9 @@
 using Application.Abstractions.Messaging;
+using Microsoft.Extensions.Localization;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
+using SilentMoon.SharedKernel.Resources;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,11 +14,13 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
     {
         private readonly IUow _uow;
         private readonly IFileStorageService _fileStorage;
+        private readonly IStringLocalizer<Messages> _localizer;
 
-        public GetCourseDetailsQueryHandler(IUow uow,IFileStorageService fileStorage)
+        public GetCourseDetailsQueryHandler(IUow uow,IFileStorageService fileStorage,IStringLocalizer<Messages> localizer)
         {
             _uow = uow;
             _fileStorage = fileStorage;
+            _localizer = localizer;
         }
 
         public async Task<Result<CourseDetailsResponse>> Handle(GetCourseDetailsQuery query,CancellationToken ct)
@@ -56,7 +61,7 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
             {
                 Id = content.Id,
                 Title = content.Title,
-                Category = content.Category.ToString(),
+                Category = _localizer.LocalizeCategory(content.Category),
                 ThumbnailUrl = thumbnailUrlTask.Result,
                 Tracks = trackResponsesTask.Result.ToList()
             };

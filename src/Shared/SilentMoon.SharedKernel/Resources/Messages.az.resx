@@ -345,6 +345,15 @@
   <data name="Email" xml:space="preserve">
     <value>E-poçt bu əməliyyat üçün uyğun vəziyyətdə deyil.</value>
   </data>
+  <data name="Email.NotConfirmed" xml:space="preserve">
+    <value>Zəhmət olmasa daxil olmazdan əvvəl e-poçtunuzu təsdiqləyin.</value>
+  </data>
+  <data name="Email.AlreadyConfirmed" xml:space="preserve">
+    <value>Bu e-poçt artıq təsdiqlənib.</value>
+  </data>
+  <data name="Email.AlreadyExists" xml:space="preserve">
+    <value>Bu e-poçt ünvanı ilə artıq bir hesab mövcuddur.</value>
+  </data>
   <data name="OTP" xml:space="preserve">
     <value>Daxil etdiyiniz OTP kodu ya yanlışdır, ya da vaxtı bitib.</value>
   </data>
@@ -359,5 +368,29 @@
   </data>
   <data name="Reminder.NotFound" xml:space="preserve">
     <value>Xatırlatma tapılmadı.</value>
+  </data>
+  <data name="Greeting.Morning" xml:space="preserve">
+    <value>Sabahınız xeyir</value>
+  </data>
+  <data name="Greeting.Afternoon" xml:space="preserve">
+    <value>Gününüz xeyir</value>
+  </data>
+  <data name="Greeting.Evening" xml:space="preserve">
+    <value>Axşamınız xeyir</value>
+  </data>
+  <data name="Greeting.Night" xml:space="preserve">
+    <value>Gecəniz xeyir</value>
+  </data>
+  <data name="ContentCategory.Course" xml:space="preserve">
+    <value>Kurs</value>
+  </data>
+  <data name="ContentCategory.Music" xml:space="preserve">
+    <value>Musiqi</value>
+  </data>
+  <data name="ContentCategory.Meditation" xml:space="preserve">
+    <value>Meditasiya</value>
+  </data>
+  <data name="ContentCategory.Sleep" xml:space="preserve">
+    <value>Yuxu</value>
   </data>
 </root>

@@ -32,7 +32,7 @@ namespace SilentMoon.Application.Features.User.Commands.Resgister
 
             if (existUser != null)
             {
-                return Error.Validation("Email", "Email already exists");
+                return Error.Validation("Email.AlreadyExists", "Email already exists");
             }
 
             var (firstName, lastName) = SplitName(command.Name);

@@ -21,10 +21,7 @@ namespace SilentMoon.WebApi.Controllers
         [HttpGet("progress/{trackId:int}")]
         public async Task<IResult> GetProgress(int trackId)
         {
-            var result = await Dispatcher.Send(new GetProgressQuery
-            {
-                TrackId = trackId
-            });
+            var result = await Dispatcher.Send(new GetProgressQuery { TrackId = trackId });
 
             return HandleResult(result);
         }

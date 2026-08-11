@@ -1,6 +1,9 @@
 using Application.Abstractions.Messaging;
+using Microsoft.Extensions.Localization;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
+using SilentMoon.SharedKernel.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +16,13 @@ namespace SilentMoon.Application.Features.Search.Queries.SearchContent
     {
         private readonly IUow _uow;
         private readonly IFileStorageService _fileStorage;
+        private readonly IStringLocalizer<Messages> _localizer;
 
-        public SearchContentQueryHandler(IUow uow,IFileStorageService fileStorage)
+        public SearchContentQueryHandler(IUow uow,IFileStorageService fileStorage,IStringLocalizer<Messages> localizer)
         {
             _uow = uow;
             _fileStorage = fileStorage;
+            _localizer = localizer;
         }
 
         public async Task<Result<List<SearchResultItemResponse>>> Handle(SearchContentQuery query,CancellationToken ct)
@@ -40,7 +45,7 @@ namespace SilentMoon.Application.Features.Search.Queries.SearchContent
             {
                 Id = content.Id,
                 Title = content.Title,
-                Category = content.Category.ToString(),
+                Category = _localizer.LocalizeCategory(content.Category),
                 Duration = content.Duration,
                 ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)
             }));

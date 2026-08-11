@@ -19,10 +19,7 @@ namespace SilentMoon.WebApi.Controllers
         [HttpGet("{id:int}")]
         public async Task<IResult> GetCourseDetails(int id)
         {
-            var result = await Dispatcher.Send(new GetCourseDetailsQuery
-            {
-                ContentId = id
-            });
+            var result = await Dispatcher.Send(new GetCourseDetailsQuery { ContentId = id });
 
             return HandleResult(result);
         }

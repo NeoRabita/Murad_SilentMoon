@@ -29,10 +29,7 @@ namespace SilentMoon.WebApi.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IResult> RemoveFavorite(int id)
         {
-            var result = await Dispatcher.Send(new RemoveFavoriteCommand
-            {
-                ContentId = id
-            });
+            var result = await Dispatcher.Send(new RemoveFavoriteCommand { ContentId = id });
 
             return HandleResult(result);
         }

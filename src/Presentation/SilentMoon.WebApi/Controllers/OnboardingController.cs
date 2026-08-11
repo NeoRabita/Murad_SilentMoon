@@ -65,10 +65,7 @@ namespace SilentMoon.WebApi.Controllers
         [HttpDelete("reminders/{id}")]
         public async Task<IResult> DeleteReminder(int id)
         {
-            var result = await Dispatcher.Send(new DeleteReminderCommand
-            {
-                Id = id
-            });
+            var result = await Dispatcher.Send(new DeleteReminderCommand { Id = id });
 
             return HandleResult(result);
         }

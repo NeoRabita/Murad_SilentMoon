@@ -1,7 +1,10 @@
 using Application.Abstractions.Messaging;
+using Microsoft.Extensions.Localization;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Common.Pagination;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
+using SilentMoon.SharedKernel.Resources;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,11 +17,13 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourses
     {
         private readonly IUow _uow;
         private readonly IFileStorageService _fileStorage;
+        private readonly IStringLocalizer<Messages> _localizer;
 
-        public GetCoursesQueryHandler(IUow uow,IFileStorageService fileStorage)
+        public GetCoursesQueryHandler(IUow uow,IFileStorageService fileStorage,IStringLocalizer<Messages> localizer)
         {
             _uow = uow;
             _fileStorage = fileStorage;
+            _localizer = localizer;
         }
 
         public async Task<Result<PagedResponse<CourseListItemResponse>>> Handle(GetCoursesQuery query,CancellationToken ct)
@@ -53,7 +58,7 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourses
             {
                 Id = content.Id,
                 Title = content.Title,
-                Category = content.Category.ToString(),
+                Category = _localizer.LocalizeCategory(content.Category),
                 Duration = content.Duration,
                 ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)
             }));

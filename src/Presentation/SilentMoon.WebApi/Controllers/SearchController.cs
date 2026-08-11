@@ -10,10 +10,7 @@ namespace SilentMoon.WebApi.Controllers
         [HttpGet]
         public async Task<IResult> Search([FromQuery] string q)
         {
-            var result = await Dispatcher.Send(new SearchContentQuery
-            {
-                Term = q
-            });
+            var result = await Dispatcher.Send(new SearchContentQuery { Term = q });
 
             return HandleResult(result);
         }

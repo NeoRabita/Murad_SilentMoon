@@ -1,7 +1,10 @@
 using Application.Abstractions.Messaging;
+using Microsoft.Extensions.Localization;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Interfaces.Authentication;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
+using SilentMoon.SharedKernel.Resources;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,13 +18,15 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
         private readonly ICurrentUser _currentUser;
         private readonly IDateTimeService _dateTimeService;
         private readonly IFileStorageService _fileStorage;
+        private readonly IStringLocalizer<Messages> _localizer;
 
-        public GetHomeQueryHandler(IUow uow,ICurrentUser currentUser,IDateTimeService dateTimeService,IFileStorageService fileStorage)
+        public GetHomeQueryHandler(IUow uow,ICurrentUser currentUser,IDateTimeService dateTimeService,IFileStorageService fileStorage,IStringLocalizer<Messages> localizer)
         {
             _uow = uow;
             _currentUser = currentUser;
             _dateTimeService = dateTimeService;
             _fileStorage = fileStorage;
+            _localizer = localizer;
         }
 
         public async Task<Result<HomeResponse>> Handle(GetHomeQuery query,CancellationToken ct)
@@ -55,13 +60,18 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
             };
         }
 
-        private static string BuildGreeting(int hour) => hour switch
+        private string BuildGreeting(int hour)
         {
-            >= 5 and < 12 => "Good Morning",
-            >= 12 and < 17 => "Good Afternoon",
-            >= 17 and < 22 => "Good Evening",
-            _ => "Good Night"
-        };
+            var key = hour switch
+            {
+                >= 5 and < 12 => "Greeting.Morning",
+                >= 12 and < 17 => "Greeting.Afternoon",
+                >= 17 and < 22 => "Greeting.Evening",
+                _ => "Greeting.Night"
+            };
+
+            return _localizer[key];
+        }
 
         private async Task<List<ContentResponse>> ToResponseListAsync(
             IEnumerable<Content> contents,
@@ -77,7 +87,7 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
             {
                 Id = content.Id,
                 Title = content.Title,
-                Category = content.Category.ToString(),
+                Category = _localizer.LocalizeCategory(content.Category),
                 Duration = content.Duration,
                 ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)
             };

@@ -48,7 +48,7 @@ namespace SilentMoon.Application.Features.User.Commands.Login
 
             if (!user.IsEmailConfirmed)
             {
-                return Error.Validation("Email","Email not confirmed");
+                return Error.Validation("Email.NotConfirmed","Email not confirmed");
             }
 
 

@@ -1,7 +1,10 @@
 using Application.Abstractions.Messaging;
+using Microsoft.Extensions.Localization;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Interfaces.Authentication;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
+using SilentMoon.SharedKernel.Resources;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -14,12 +17,14 @@ namespace SilentMoon.Application.Features.Favorites.Queries.GetFavorites
         private readonly IUow _uow;
         private readonly ICurrentUser _currentUser;
         private readonly IFileStorageService _fileStorage;
+        private readonly IStringLocalizer<Messages> _localizer;
 
-        public GetFavoritesQueryHandler(IUow uow,ICurrentUser currentUser,IFileStorageService fileStorage)
+        public GetFavoritesQueryHandler(IUow uow,ICurrentUser currentUser,IFileStorageService fileStorage,IStringLocalizer<Messages> localizer)
         {
             _uow = uow;
             _currentUser = currentUser;
             _fileStorage = fileStorage;
+            _localizer = localizer;
         }
 
         public async Task<Result<List<FavoriteItemResponse>>> Handle(GetFavoritesQuery query,CancellationToken ct)
@@ -48,7 +53,7 @@ namespace SilentMoon.Application.Features.Favorites.Queries.GetFavorites
                     {
                         ContentId = content.Id,
                         Title = content.Title,
-                        Category = content.Category.ToString(),
+                        Category = _localizer.LocalizeCategory(content.Category),
                         Duration = content.Duration,
                         ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)
                     };
