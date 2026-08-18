@@ -9,7 +9,7 @@ namespace SilentMoon.WebApi.Controllers
     public class TracksController : BaseController
     {
         [HttpGet("{id:int}/stream")]
-        public async Task<IResult> Stream(int id, CancellationToken ct)
+        public async Task<IActionResult> Stream(int id, CancellationToken ct)
         {
             var result = await Dispatcher.Send(new GetTrackStreamQuery
             {

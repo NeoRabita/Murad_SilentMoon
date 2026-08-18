@@ -77,7 +77,8 @@ namespace SilentMoon.WebApi.Extensions
         private static readonly HashSet<string> PublicControllers = new(StringComparer.OrdinalIgnoreCase)
         {
             "Account",
-            "Topics"
+            "Topics",
+            "Tracks"
         };
 
         public static void UseAuthEnforcement(this IApplicationBuilder app)

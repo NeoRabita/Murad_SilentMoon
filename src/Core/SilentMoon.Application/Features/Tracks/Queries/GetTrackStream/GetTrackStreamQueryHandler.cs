@@ -33,12 +33,24 @@ namespace SilentMoon.Application.Features.Tracks.Queries.GetTrackStream
 
             var (rangeStart, rangeEnd) = ParseRange(query.RangeHeader);
 
-            return await _fileStorage.GetObjectRangeAsync(
+            if (string.IsNullOrWhiteSpace(track.AudioUrl))
+            {
+                return Error.NotFound("Track.AudioUrl", "Track audio file is not available.");
+            }
+
+            var rangeResult = await _fileStorage.GetObjectRangeAsync(
                 MinioBucket.Tracks,
                 track.AudioUrl,
                 rangeStart,
                 rangeEnd,
                 ct);
+
+            if (rangeResult == null)
+            {
+                return Error.NotFound("Track.File", "Audio file not found in storage.");
+            }
+
+            return rangeResult;
         }
 
         private static (long? Start, long? End) ParseRange(string rangeHeader)
