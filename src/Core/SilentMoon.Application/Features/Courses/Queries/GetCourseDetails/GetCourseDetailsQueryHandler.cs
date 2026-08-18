@@ -4,6 +4,7 @@ using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
 using SilentMoon.SharedKernel.Resources;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,10 +46,15 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
                 .OrderBy(x => x.SortOrder)
                 .ToList();
 
+            var translationRepo = _uow.GetRepository<Translation>();
+
+            var translations = (await translationRepo.GetAllAsync(ct))
+                .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+
             var trackResponsesTask = Task.WhenAll(tracks.Select(async track => new TrackResponse
             {
                 Id = track.Id,
-                Title = track.Title,
+                Title = translations.Localize(TranslationKeys.Track(track.Id, "Title"), track.Title),
                 Duration = track.Duration,
                 AudioUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Tracks, track.AudioUrl, ct)
             }));
@@ -60,7 +66,7 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
             return new CourseDetailsResponse
             {
                 Id = content.Id,
-                Title = content.Title,
+                Title = translations.Localize(TranslationKeys.Content(content.Id, "Title"), content.Title),
                 Category = _localizer.LocalizeCategory(content.Category),
                 ThumbnailUrl = thumbnailUrlTask.Result,
                 Tracks = trackResponsesTask.Result.ToList()

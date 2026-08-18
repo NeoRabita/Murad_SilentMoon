@@ -6,6 +6,7 @@ using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
 using SilentMoon.SharedKernel.Resources;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,6 +44,11 @@ namespace SilentMoon.Application.Features.Favorites.Queries.GetFavorites
 
             var contentById = contents.ToDictionary(x => x.Id);
 
+            var translationRepo = _uow.GetRepository<Translation>();
+
+            var translations = (await translationRepo.GetAllAsync(ct))
+                .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+
             var items = await Task.WhenAll(myFavorites
                 .Where(x => contentById.ContainsKey(x.ContentId))
                 .Select(async favorite =>
@@ -52,7 +58,7 @@ namespace SilentMoon.Application.Features.Favorites.Queries.GetFavorites
                     return new FavoriteItemResponse
                     {
                         ContentId = content.Id,
-                        Title = content.Title,
+                        Title = translations.Localize(TranslationKeys.Content(content.Id, "Title"), content.Title),
                         Category = _localizer.LocalizeCategory(content.Category),
                         Duration = content.Duration,
                         ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)

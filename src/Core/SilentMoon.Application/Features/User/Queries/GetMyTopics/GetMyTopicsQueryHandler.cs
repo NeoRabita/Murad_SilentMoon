@@ -1,8 +1,10 @@
 using Application.Abstractions.Messaging;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Features.Topics;
 using SilentMoon.Application.Interfaces.Authentication;
 using SilentMoon.Domain.Entities;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,9 +30,12 @@ namespace SilentMoon.Application.Features.User.Queries.GetMyTopics
         {
             var userTopicRepo = _uow.GetRepository<UserTopic>();
             var topicRepo = _uow.GetRepository<Topic>();
+            var translationRepo = _uow.GetRepository<Translation>();
 
             var userTopics = await userTopicRepo.GetAllAsync(ct);
             var topics = await topicRepo.GetAllAsync(ct);
+            var translations = (await translationRepo.GetAllAsync(ct))
+                .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
 
             var myTopicIds = userTopics
                 .Where(x => x.ApplicationUserId == _currentUser.UserId)
@@ -42,7 +47,7 @@ namespace SilentMoon.Application.Features.User.Queries.GetMyTopics
                 .Select(x => new TopicResponse
                 {
                     Id = x.Id,
-                    Name = x.Name
+                    Name = translations.Localize(TranslationKeys.Topic(x.Id, "Name"), x.Name)
                 })
                 .ToList();
         }

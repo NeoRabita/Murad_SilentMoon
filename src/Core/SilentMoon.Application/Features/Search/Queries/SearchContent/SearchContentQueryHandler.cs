@@ -6,6 +6,7 @@ using SilentMoon.Domain.Entities;
 using SilentMoon.SharedKernel.Resources;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,10 +42,15 @@ namespace SilentMoon.Application.Features.Search.Queries.SearchContent
                 .OrderBy(x => x.SortOrder)
                 .ToList();
 
+            var translationRepo = _uow.GetRepository<Translation>();
+
+            var translations = (await translationRepo.GetAllAsync(ct))
+                .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+
             var items = await Task.WhenAll(matches.Select(async content => new SearchResultItemResponse
             {
                 Id = content.Id,
-                Title = content.Title,
+                Title = translations.Localize(TranslationKeys.Content(content.Id, "Title"), content.Title),
                 Category = _localizer.LocalizeCategory(content.Category),
                 Duration = content.Duration,
                 ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)

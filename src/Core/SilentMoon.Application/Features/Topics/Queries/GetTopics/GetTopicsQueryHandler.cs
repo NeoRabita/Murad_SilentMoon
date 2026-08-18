@@ -1,6 +1,8 @@
 using Application.Abstractions.Messaging;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Domain.Entities;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,14 +23,17 @@ namespace SilentMoon.Application.Features.Topics.Queries.GetTopics
             CancellationToken ct)
         {
             var topicRepo = _uow.GetRepository<Topic>();
+            var translationRepo = _uow.GetRepository<Translation>();
 
             var topics = await topicRepo.GetAllAsync(ct);
+            var translations = (await translationRepo.GetAllAsync(ct))
+                .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
 
             return topics
                 .Select(x => new TopicResponse
                 {
                     Id = x.Id,
-                    Name = x.Name
+                    Name = translations.Localize(TranslationKeys.Topic(x.Id, "Name"), x.Name)
                 })
                 .ToList();
         }

@@ -1,9 +1,11 @@
 using Application.Abstractions.Messaging;
+using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Interfaces.Authentication;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
 using SilentMoon.Domain.Enums;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,11 +31,14 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
             var contentTopicRepo = _uow.GetRepository<ContentTopic>();
             var userTopicRepo = _uow.GetRepository<UserTopic>();
             var contentNarratorRepo = _uow.GetRepository<ContentNarrator>();
+            var translationRepo = _uow.GetRepository<Translation>();
 
             var contents = (await contentRepo.GetAllAsync(ct)).ToList();
             var contentTopics = (await contentTopicRepo.GetAllAsync(ct)).ToList();
             var userTopics = (await userTopicRepo.GetAllAsync(ct)).ToList();
             var contentNarrators = (await contentNarratorRepo.GetAllAsync(ct)).ToList();
+            var translations = (await translationRepo.GetAllAsync(ct))
+                .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
 
             var categoryIdByContentId = contentTopics
                 .GroupBy(x => x.ContentId)
@@ -70,12 +75,12 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
                 .Where(x => x.Category == ContentCategory.Meditation && x.IsPopular)
                 .OrderBy(x => x.SortOrder);
 
-            var recommendedTask = ToItemListAsync(recommendedContents, categoryIdByContentId, narratorsByContentId, ct);
-            var featuredSleepTask = ToItemListAsync(featuredSleepContents, categoryIdByContentId, narratorsByContentId, ct);
-            var popularMeditationsTask = ToItemListAsync(popularMeditationContents, categoryIdByContentId, narratorsByContentId, ct);
+            var recommendedTask = ToItemListAsync(recommendedContents, categoryIdByContentId, narratorsByContentId, translations, ct);
+            var featuredSleepTask = ToItemListAsync(featuredSleepContents, categoryIdByContentId, narratorsByContentId, translations, ct);
+            var popularMeditationsTask = ToItemListAsync(popularMeditationContents, categoryIdByContentId, narratorsByContentId, translations, ct);
             var dailyThoughtTask = dailyThoughtContent == null
                 ? Task.FromResult<HomeItemResponse>(null)
-                : ToItemAsync(dailyThoughtContent, categoryIdByContentId, narratorsByContentId, ct);
+                : ToItemAsync(dailyThoughtContent, categoryIdByContentId, narratorsByContentId, translations, ct);
 
             await Task.WhenAll(recommendedTask, featuredSleepTask, popularMeditationsTask, dailyThoughtTask);
 
@@ -92,10 +97,11 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
             IEnumerable<Content> contents,
             Dictionary<int, string> categoryIdByContentId,
             Dictionary<int, List<string>> narratorsByContentId,
+            Dictionary<string, string> translations,
             CancellationToken ct)
         {
             var responses = await Task.WhenAll(contents.Select(content =>
-                ToItemAsync(content, categoryIdByContentId, narratorsByContentId, ct)));
+                ToItemAsync(content, categoryIdByContentId, narratorsByContentId, translations, ct)));
 
             return responses.ToList();
         }
@@ -104,11 +110,12 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
             Content content,
             Dictionary<int, string> categoryIdByContentId,
             Dictionary<int, List<string>> narratorsByContentId,
+            Dictionary<string, string> translations,
             CancellationToken ct) => new()
             {
                 Id = $"course_{content.Id}",
-                Title = content.Title,
-                Subtitle = content.Subtitle,
+                Title = translations.Localize(TranslationKeys.Content(content.Id, "Title"), content.Title),
+                Subtitle = translations.Localize(TranslationKeys.Content(content.Id, "Subtitle"), content.Subtitle),
                 Type = content.Category.ToString().ToLowerInvariant(),
                 CategoryId = categoryIdByContentId.GetValueOrDefault(content.Id),
                 ImageUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct),
