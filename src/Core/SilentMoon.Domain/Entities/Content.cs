@@ -7,9 +7,13 @@ namespace SilentMoon.Domain.Entities
     {
         public string Title { get; set; }
 
+        public string Subtitle { get; set; }
+
         public ContentCategory Category { get; set; }
 
         public string Duration { get; set; }
+
+        public int DurationSeconds { get; set; }
 
         public string ThumbnailUrl { get; set; }
 
@@ -18,6 +22,8 @@ namespace SilentMoon.Domain.Entities
         public bool IsDailyThought { get; set; }
 
         public bool IsRecommended { get; set; }
+
+        public bool IsPopular { get; set; }
 
         public int SortOrder { get; set; }
     }

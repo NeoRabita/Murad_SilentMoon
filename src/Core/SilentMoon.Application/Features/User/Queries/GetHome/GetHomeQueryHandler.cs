@@ -1,10 +1,8 @@
 using Application.Abstractions.Messaging;
-using Microsoft.Extensions.Localization;
-using SilentMoon.Application.Common.Extensions;
 using SilentMoon.Application.Interfaces.Authentication;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
-using SilentMoon.SharedKernel.Resources;
+using SilentMoon.Domain.Enums;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -16,80 +14,107 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
     {
         private readonly IUow _uow;
         private readonly ICurrentUser _currentUser;
-        private readonly IDateTimeService _dateTimeService;
         private readonly IFileStorageService _fileStorage;
-        private readonly IStringLocalizer<Messages> _localizer;
 
-        public GetHomeQueryHandler(IUow uow,ICurrentUser currentUser,IDateTimeService dateTimeService,IFileStorageService fileStorage,IStringLocalizer<Messages> localizer)
+        public GetHomeQueryHandler(IUow uow, ICurrentUser currentUser, IFileStorageService fileStorage)
         {
             _uow = uow;
             _currentUser = currentUser;
-            _dateTimeService = dateTimeService;
             _fileStorage = fileStorage;
-            _localizer = localizer;
         }
 
-        public async Task<Result<HomeResponse>> Handle(GetHomeQuery query,CancellationToken ct)
+        public async Task<Result<HomeResponse>> Handle(GetHomeQuery query, CancellationToken ct)
         {
             var contentRepo = _uow.GetRepository<Content>();
+            var contentTopicRepo = _uow.GetRepository<ContentTopic>();
+            var userTopicRepo = _uow.GetRepository<UserTopic>();
+            var contentNarratorRepo = _uow.GetRepository<ContentNarrator>();
 
-            var contents = await contentRepo.GetAllAsync(ct);
+            var contents = (await contentRepo.GetAllAsync(ct)).ToList();
+            var contentTopics = (await contentTopicRepo.GetAllAsync(ct)).ToList();
+            var userTopics = (await userTopicRepo.GetAllAsync(ct)).ToList();
+            var contentNarrators = (await contentNarratorRepo.GetAllAsync(ct)).ToList();
+
+            var categoryIdByContentId = contentTopics
+                .GroupBy(x => x.ContentId)
+                .ToDictionary(g => g.Key, g => g.First().TopicId.ToString());
+
+            var narratorsByContentId = contentNarrators
+                .GroupBy(x => x.ContentId)
+                .ToDictionary(g => g.Key, g => g.Select(n => n.Gender.ToString().ToLowerInvariant()).ToList());
+
+            var recommendedTopicIds = userTopics
+                .Where(x => x.ApplicationUserId == _currentUser.UserId)
+                .Select(x => x.TopicId)
+                .ToHashSet();
+
+            var recommendedContentIds = contentTopics
+                .Where(x => recommendedTopicIds.Contains(x.TopicId))
+                .Select(x => x.ContentId)
+                .ToHashSet();
+
+            var recommendedContents = contents
+                .Where(x => recommendedContentIds.Contains(x.Id))
+                .OrderBy(x => x.SortOrder);
 
             var dailyThoughtContent = contents
                 .Where(x => x.IsDailyThought)
                 .OrderBy(x => x.SortOrder)
                 .FirstOrDefault();
 
-            var featuredTask = ToResponseListAsync(contents.Where(x => x.IsFeatured).OrderBy(x => x.SortOrder), ct);
+            var featuredSleepContents = contents
+                .Where(x => x.Category == ContentCategory.Sleep && x.IsFeatured)
+                .OrderBy(x => x.SortOrder);
 
-            var recommendedTask = ToResponseListAsync(contents.Where(x => x.IsRecommended).OrderBy(x => x.SortOrder), ct);
+            var popularMeditationContents = contents
+                .Where(x => x.Category == ContentCategory.Meditation && x.IsPopular)
+                .OrderBy(x => x.SortOrder);
 
+            var recommendedTask = ToItemListAsync(recommendedContents, categoryIdByContentId, narratorsByContentId, ct);
+            var featuredSleepTask = ToItemListAsync(featuredSleepContents, categoryIdByContentId, narratorsByContentId, ct);
+            var popularMeditationsTask = ToItemListAsync(popularMeditationContents, categoryIdByContentId, narratorsByContentId, ct);
             var dailyThoughtTask = dailyThoughtContent == null
-                ? Task.FromResult<ContentResponse>(null)
-                : ToResponseAsync(dailyThoughtContent, ct);
+                ? Task.FromResult<HomeItemResponse>(null)
+                : ToItemAsync(dailyThoughtContent, categoryIdByContentId, narratorsByContentId, ct);
 
-            await Task.WhenAll(featuredTask, recommendedTask, dailyThoughtTask);
+            await Task.WhenAll(recommendedTask, featuredSleepTask, popularMeditationsTask, dailyThoughtTask);
 
             return new HomeResponse
             {
-                Greeting = BuildGreeting(_dateTimeService.localTime.Hour),
-                UserName = _currentUser.UserName,
-                Featured = featuredTask.Result,
+                Recommended = new HomeSectionResponse { Title = "Recommended For You", Items = recommendedTask.Result },
                 DailyThought = dailyThoughtTask.Result,
-                Recommended = recommendedTask.Result
+                FeaturedSleep = new HomeSectionResponse { Title = "Sleep", Items = featuredSleepTask.Result },
+                PopularMeditations = new HomeSectionResponse { Title = "Popular Meditations", Items = popularMeditationsTask.Result }
             };
         }
 
-        private string BuildGreeting(int hour)
-        {
-            var key = hour switch
-            {
-                >= 5 and < 12 => "Greeting.Morning",
-                >= 12 and < 17 => "Greeting.Afternoon",
-                >= 17 and < 22 => "Greeting.Evening",
-                _ => "Greeting.Night"
-            };
-
-            return _localizer[key];
-        }
-
-        private async Task<List<ContentResponse>> ToResponseListAsync(
+        private async Task<List<HomeItemResponse>> ToItemListAsync(
             IEnumerable<Content> contents,
+            Dictionary<int, string> categoryIdByContentId,
+            Dictionary<int, List<string>> narratorsByContentId,
             CancellationToken ct)
         {
-            var responses = await Task.WhenAll(contents.Select(content => ToResponseAsync(content, ct)));
+            var responses = await Task.WhenAll(contents.Select(content =>
+                ToItemAsync(content, categoryIdByContentId, narratorsByContentId, ct)));
 
             return responses.ToList();
         }
-        private async Task<ContentResponse> ToResponseAsync(
+
+        private async Task<HomeItemResponse> ToItemAsync(
             Content content,
+            Dictionary<int, string> categoryIdByContentId,
+            Dictionary<int, List<string>> narratorsByContentId,
             CancellationToken ct) => new()
             {
-                Id = content.Id,
+                Id = $"course_{content.Id}",
                 Title = content.Title,
-                Category = _localizer.LocalizeCategory(content.Category),
-                Duration = content.Duration,
-                ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)
+                Subtitle = content.Subtitle,
+                Type = content.Category.ToString().ToLowerInvariant(),
+                CategoryId = categoryIdByContentId.GetValueOrDefault(content.Id),
+                ImageUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct),
+                DurationSec = content.DurationSeconds,
+                IsFeatured = content.IsFeatured,
+                Narrators = narratorsByContentId.GetValueOrDefault(content.Id) ?? new List<string>()
             };
     }
 }

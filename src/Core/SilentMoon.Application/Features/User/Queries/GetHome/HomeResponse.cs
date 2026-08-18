@@ -1,17 +1,13 @@
-using System.Collections.Generic;
-
 namespace SilentMoon.Application.Features.User.Queries.GetHome
 {
     public class HomeResponse
     {
-        public string Greeting { get; set; }
+        public HomeSectionResponse Recommended { get; set; }
 
-        public string UserName { get; set; }
+        public HomeItemResponse DailyThought { get; set; }
 
-        public List<ContentResponse> Featured { get; set; }
+        public HomeSectionResponse FeaturedSleep { get; set; }
 
-        public ContentResponse DailyThought { get; set; }
-
-        public List<ContentResponse> Recommended { get; set; }
+        public HomeSectionResponse PopularMeditations { get; set; }
     }
 }
