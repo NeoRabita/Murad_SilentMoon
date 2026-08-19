@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using SilentMoon.Infrastructure.Persistence.Contexts;
@@ -11,9 +12,11 @@ using SilentMoon.Infrastructure.Persistence.Contexts;
 namespace SilentMoon.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260819063702_addCategories")]
+    partial class addCategories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -348,21 +351,6 @@ namespace SilentMoon.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Duration")
                         .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<int>("DurationSeconds")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<long?>("FileSizeBytes")
-                        .HasColumnType("NUMBER(19)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<string>("MimeType")
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<int>("Narrator")
-                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("NUMBER(10)");

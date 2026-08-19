@@ -10,6 +10,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SilentMoon.Infrastructure.Persistence.Services;
 using SilentMoon.SharedKernel.Resources;
+using SilentMoon.WebApi.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -105,18 +106,19 @@ namespace SilentMoon.WebApi.Extensions
                     var localizer = context.RequestServices.GetRequiredService<IStringLocalizer<Messages>>();
 
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    context.Response.ContentType = "application/problem+json";
+                    context.Response.ContentType = "application/json";
 
-                    var problemDetails = new
+                    var envelope = new ErrorEnvelope
                     {
-                        type = "https://tools.ietf.org/html/rfc7235#section-3.1",
-                        title = localizer["ErrorType.Unauthorized"].Value,
-                        status = StatusCodes.Status401Unauthorized,
-                        detail = localizer["ErrorType.UnauthorizedDetail"].Value,
-                        errorCode = "Error.Unauthorized"
+                        Error = new ErrorDetail
+                        {
+                            Code = "Error.Unauthorized",
+                            Message = localizer["ErrorType.UnauthorizedDetail"].Value,
+                            RequestId = context.TraceIdentifier
+                        }
                     };
 
-                    await context.Response.WriteAsJsonAsync(problemDetails);
+                    await context.Response.WriteAsJsonAsync(envelope);
 
                     return;
                 }
@@ -156,26 +158,20 @@ namespace SilentMoon.WebApi.Extensions
                         _ => ErrorType.Unexpected
                     };
 
-                    var typeInfo = errorType switch
-                    {
-                        ErrorType.Unauthorized => "https://tools.ietf.org/html/rfc7235#section-3.1",
-                        ErrorType.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
-                        _ => "https://tools.ietf.org/html/rfc7231#section-6.6.1"
-                    };
-
                     context.Response.StatusCode = statusCode;
-                    context.Response.ContentType = "application/problem+json";
+                    context.Response.ContentType = "application/json";
 
-                    var problemDetails = new
+                    var envelope = new ErrorEnvelope
                     {
-                        type = typeInfo,
-                        title = localizer[localizer["ErrorType." + Enum.GetName(errorType)]].Value,
-                        status = statusCode,
-                        detail = localizer["ErrorType." + Enum.GetName(errorType) + "Detail"].Value,
-                        errorCode = $"Error.{errorType}"
+                        Error = new ErrorDetail
+                        {
+                            Code = $"Error.{errorType}",
+                            Message = localizer["ErrorType." + Enum.GetName(errorType) + "Detail"].Value,
+                            RequestId = context.TraceIdentifier
+                        }
                     };
 
-                    await context.Response.WriteAsJsonAsync(problemDetails);
+                    await context.Response.WriteAsJsonAsync(envelope);
                 }
             }));
         }

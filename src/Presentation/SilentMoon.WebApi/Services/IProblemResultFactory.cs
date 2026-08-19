@@ -4,5 +4,5 @@ namespace SilentMoon.WebApi.Services;
 
 public interface IProblemResultFactory
 {
-    public IResult CreateProblem(Result result);
+    public IResult CreateProblem(Result result, string requestId);
 }

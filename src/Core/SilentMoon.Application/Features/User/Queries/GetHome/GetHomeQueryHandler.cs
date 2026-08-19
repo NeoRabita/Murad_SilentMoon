@@ -114,8 +114,8 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
             CancellationToken ct) => new()
             {
                 Id = $"course_{content.Id}",
-                Title = translations.Localize(TranslationKeys.Content(content.Id, "Title"), content.Title),
-                Subtitle = translations.Localize(TranslationKeys.Content(content.Id, "Subtitle"), content.Subtitle),
+                Title = translations.Localize(TranslationKeys.For("Content", content.Id, "Title"), content.Title),
+                Subtitle = translations.Localize(TranslationKeys.For("Content", content.Id, "Subtitle"), content.Subtitle),
                 Type = content.Category.ToString().ToLowerInvariant(),
                 CategoryId = categoryIdByContentId.GetValueOrDefault(content.Id),
                 ImageUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct),

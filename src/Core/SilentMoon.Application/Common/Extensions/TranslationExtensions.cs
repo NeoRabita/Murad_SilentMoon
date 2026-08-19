@@ -19,10 +19,6 @@ namespace SilentMoon.Application.Common.Extensions
 
     public static class TranslationKeys
     {
-        public static string Content(int id, string field) => $"Content:{id}:{field}";
-
-        public static string Topic(int id, string field) => $"Topic:{id}:{field}";
-
-        public static string Track(int id, string field) => $"Track:{id}:{field}";
+        public static string For(string entityType, int id, string field) => $"{entityType}:{id}:{field}";
     }
 }

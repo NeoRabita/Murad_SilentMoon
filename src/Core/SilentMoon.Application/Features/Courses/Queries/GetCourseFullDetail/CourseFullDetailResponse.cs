@@ -1,4 +1,4 @@
-using SilentMoon.Application.Features.Courses;
+using SilentMoon.Application.Features.Tracks;
 using System.Collections.Generic;
 
 namespace SilentMoon.Application.Features.Courses.Queries.GetCourseFullDetail

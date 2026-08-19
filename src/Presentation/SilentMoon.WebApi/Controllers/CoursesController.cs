@@ -28,9 +28,9 @@ namespace SilentMoon.WebApi.Controllers
         }
 
         [HttpGet("{id:int}/tracks")]
-        public async Task<IResult> GetCourseTracks(int id)
+        public async Task<IResult> GetCourseTracks(int id, [FromQuery] string narrator)
         {
-            var result = await Dispatcher.Send(new GetCourseTracksQuery { ContentId = id });
+            var result = await Dispatcher.Send(new GetCourseTracksQuery { ContentId = id, Narrator = narrator });
 
             return HandleResult(result);
         }
@@ -44,9 +44,9 @@ namespace SilentMoon.WebApi.Controllers
         }
 
         [HttpGet("{id:int}/related")]
-        public async Task<IResult> GetRelatedCourses(int id)
+        public async Task<IResult> GetRelatedCourses(int id, [FromQuery] int? limit)
         {
-            var result = await Dispatcher.Send(new GetRelatedCoursesQuery { ContentId = id });
+            var result = await Dispatcher.Send(new GetRelatedCoursesQuery { ContentId = id, Limit = limit });
 
             return HandleResult(result);
         }

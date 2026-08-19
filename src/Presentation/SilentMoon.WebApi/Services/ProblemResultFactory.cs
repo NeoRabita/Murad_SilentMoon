@@ -1,35 +1,36 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System;
 using Microsoft.Extensions.Localization;
 using System.Linq;
 using SilentMoon.SharedKernel.Primitives;
 using SilentMoon.SharedKernel.Resources;
+using SilentMoon.WebApi.Contracts;
 
 namespace SilentMoon.WebApi.Services;
 
 public class ProblemResultFactory(IStringLocalizer<Messages> localizer) : IProblemResultFactory
 {
-    public IResult CreateProblem(Result result)
+    public IResult CreateProblem(Result result, string requestId)
     {
         if (result.IsSuccess)
         {
             throw new InvalidOperationException("Cannot create a problem result for a successful operation.");
         }
 
-        var extensions = new Dictionary<string, object?>
-            {
-                { "errorCode", result.Error.Code }
-            };
+        var details = new List<ErrorFieldDetail>();
 
         if (result.Error is ValidationError validationError)
         {
-            var translatedErrors = validationError.Errors.Select(e =>
+            details = validationError.Errors.Select(e =>
             {
-                var localizedString = localizer[e.Code];
-                string template = localizedString.ResourceNotFound ? e.Description : localizedString.Value;
+                var field = validationError.Placeholders.Keys
+                    .FirstOrDefault(k => k.EndsWith($"_{e.Code}"));
 
-                string finalMessage = template;
+                field = field != null ? field[..^(e.Code.Length + 1)] : e.Code;
+
+                var localizedString = localizer[e.Code];
+                string issue = localizedString.ResourceNotFound ? e.Description : localizedString.Value;
 
                 foreach (var pSet in validationError.Placeholders.Values)
                 {
@@ -37,46 +38,35 @@ public class ProblemResultFactory(IStringLocalizer<Messages> localizer) : IProbl
                     {
                         foreach (var placeholder in pSet)
                         {
-                            finalMessage = finalMessage.Replace($"{{{placeholder.Key}}}", placeholder.Value?.ToString());
+                            issue = issue.Replace($"{{{placeholder.Key}}}", placeholder.Value?.ToString());
                         }
                     }
                 }
 
-                return new { code = e.Code, description = finalMessage };
+                return new ErrorFieldDetail { Field = field, Issue = issue };
             }).ToList();
-
-            extensions.Add("errors", translatedErrors);
         }
 
-        return Results.Problem(
-            title: GetTitle(result.Error),
-            detail: GetDetail(result.Error),
-            type: GetType(result.Error.Type),
-            statusCode: GetStatusCode(result.Error.Type),
-            extensions: extensions);
+        var envelope = new ErrorEnvelope
+        {
+            Error = new ErrorDetail
+            {
+                Code = result.Error.Code,
+                Message = GetMessage(result.Error),
+                Details = details,
+                RequestId = requestId
+            }
+        };
 
-        string GetTitle(Error error) => localizer["ErrorType." + Enum.GetName(error.Type)];
+        return Results.Json(envelope, statusCode: GetStatusCode(result.Error.Type));
 
-        string GetDetail(Error error) {
-
+        string GetMessage(Error error)
+        {
             var localizedString = localizer[error.Code];
-            string errorCodeDetail = localizedString.ResourceNotFound ? localizer["ErrorType." + Enum.GetName(error.Type) + "Detail"] : localizedString.Value;
-
-            return errorCodeDetail;
+            return localizedString.ResourceNotFound
+                ? localizer["ErrorType." + Enum.GetName(error.Type) + "Detail"]
+                : localizedString.Value;
         }
-        string GetType(ErrorType errorType) =>
-           errorType switch
-           {
-               ErrorType.Validation or ErrorType.InvalidRequest or ErrorType.Problem => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-               ErrorType.Unauthorized => "https://tools.ietf.org/html/rfc7235#section-3.1",
-               ErrorType.Forbidden => "https://tools.ietf.org/html/rfc7231#section-6.5.3",
-               ErrorType.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
-               ErrorType.Conflict => "https://tools.ietf.org/html/rfc7231#section-6.5.8",
-               ErrorType.InvalidState => "https://tools.ietf.org/html/rfc4918#section-11.2",
-               ErrorType.LimitExceeded => "https://tools.ietf.org/html/rfc6585#section-4",
-               ErrorType.Unavailable => "https://tools.ietf.org/html/rfc7231#section-6.6.4",
-               _ => "https://tools.ietf.org/html/rfc7231#section-6.6.1"
-           };
 
         int GetStatusCode(ErrorType errorType) =>
            errorType switch

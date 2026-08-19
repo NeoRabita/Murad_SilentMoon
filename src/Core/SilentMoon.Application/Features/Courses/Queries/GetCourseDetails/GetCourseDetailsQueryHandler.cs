@@ -51,8 +51,8 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
             return new CourseDetailsResponse
             {
                 Id = content.Id,
-                Title = translations.Localize(TranslationKeys.Content(content.Id, "Title"), content.Title),
-                Subtitle = translations.Localize(TranslationKeys.Content(content.Id, "Subtitle"), content.Subtitle),
+                Title = translations.Localize(TranslationKeys.For("Content", content.Id, "Title"), content.Title),
+                Subtitle = translations.Localize(TranslationKeys.For("Content", content.Id, "Subtitle"), content.Subtitle),
                 Category = _localizer.LocalizeCategory(content.Category),
                 ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct),
                 Narrators = narrators

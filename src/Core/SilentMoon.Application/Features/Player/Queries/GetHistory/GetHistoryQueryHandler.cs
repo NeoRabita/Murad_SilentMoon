@@ -55,11 +55,11 @@ namespace SilentMoon.Application.Features.Player.Queries.GetHistory
                     return new HistoryItemResponse
                     {
                         TrackId = x.track.Id,
-                        TrackTitle = translations.Localize(TranslationKeys.Track(x.track.Id, "Title"), x.track.Title),
+                        TrackTitle = translations.Localize(TranslationKeys.For("Track", x.track.Id, "Title"), x.track.Title),
                         ContentId = x.track.ContentId,
                         ContentTitle = matchedContent == null
                             ? null
-                            : translations.Localize(TranslationKeys.Content(matchedContent.Id, "Title"), matchedContent.Title),
+                            : translations.Localize(TranslationKeys.For("Content", matchedContent.Id, "Title"), matchedContent.Title),
                         PositionSeconds = x.progress.PositionSeconds,
                         UpdatedAtUtc = x.progress.UpdatedAtUtc
                     };

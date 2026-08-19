@@ -1,9 +1,10 @@
 using Application.Abstractions.Messaging;
-using System.Collections.Generic;
+using SilentMoon.Application.Common;
 
 namespace SilentMoon.Application.Features.Categories.Queries.GetCategories
 {
-    public class GetCategoriesQuery : IQuery<List<CategoryResponse>>
+    public class GetCategoriesQuery : IQuery<DataEnvelope<CategoryResponse>>
     {
+        public string Type { get; set; }
     }
 }

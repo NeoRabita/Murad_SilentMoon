@@ -22,6 +22,8 @@ namespace SilentMoon.Infrastructure.Persistence.Contexts
 
         public DbSet<Topic> Topics { get; set; }
 
+        public DbSet<Category> Categories { get; set; }
+
         public DbSet<UserTopic> UserTopics { get; set; }
 
         public DbSet<Reminder> Reminders { get; set; }

@@ -1,6 +1,7 @@
 using Application.Abstractions.Messaging;
 using Microsoft.Extensions.Localization;
 using SilentMoon.Application.Common.Extensions;
+using SilentMoon.Application.Features.Tracks;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
 using SilentMoon.SharedKernel.Resources;
@@ -55,17 +56,23 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseFullDetail
                 .Select(track => new TrackResponse
                 {
                     Id = track.Id,
-                    Title = translations.Localize(TranslationKeys.Track(track.Id, "Title"), track.Title),
-                    Duration = track.Duration,
-                    AudioUrl = $"/api/v1/tracks/{track.Id}/stream"
+                    CourseId = track.ContentId,
+                    Title = translations.Localize(TranslationKeys.For("Track", track.Id, "Title"), track.Title),
+                    Narrator = track.Narrator.ToString().ToLowerInvariant(),
+                    DurationSec = track.DurationSeconds,
+                    AudioUrl = $"/api/v1/tracks/{track.Id}/stream",
+                    MimeType = track.MimeType ?? "audio/mpeg",
+                    FileSizeBytes = track.FileSizeBytes,
+                    ImageUrl = track.ImageUrl,
+                    TrackNumber = track.SortOrder
                 })
                 .ToList();
 
             return new CourseFullDetailResponse
             {
                 Id = content.Id,
-                Title = translations.Localize(TranslationKeys.Content(content.Id, "Title"), content.Title),
-                Subtitle = translations.Localize(TranslationKeys.Content(content.Id, "Subtitle"), content.Subtitle),
+                Title = translations.Localize(TranslationKeys.For("Content", content.Id, "Title"), content.Title),
+                Subtitle = translations.Localize(TranslationKeys.For("Content", content.Id, "Subtitle"), content.Subtitle),
                 Category = _localizer.LocalizeCategory(content.Category),
                 ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct),
                 Narrators = narrators,

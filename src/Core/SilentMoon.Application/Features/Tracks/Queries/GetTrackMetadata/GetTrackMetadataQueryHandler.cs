@@ -45,7 +45,7 @@ namespace SilentMoon.Application.Features.Tracks.Queries.GetTrackMetadata
             {
                 Id = track.Id,
                 ContentId = track.ContentId,
-                Title = translations.Localize(TranslationKeys.Track(track.Id, "Title"), track.Title),
+                Title = translations.Localize(TranslationKeys.For("Track", track.Id, "Title"), track.Title),
                 Duration = track.Duration,
                 AudioUrl = $"/api/v1/tracks/{track.Id}/stream",
                 Narrators = narrators

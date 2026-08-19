@@ -47,7 +47,7 @@ namespace SilentMoon.Application.Features.User.Queries.GetMyTopics
                 .Select(x => new TopicResponse
                 {
                     Id = x.Id,
-                    Name = translations.Localize(TranslationKeys.Topic(x.Id, "Name"), x.Name)
+                    Name = translations.Localize(TranslationKeys.For("Topic", x.Id, "Name"), x.Name)
                 })
                 .ToList();
         }

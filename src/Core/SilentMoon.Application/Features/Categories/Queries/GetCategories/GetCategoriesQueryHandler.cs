@@ -1,38 +1,54 @@
 using Application.Abstractions.Messaging;
-using Microsoft.Extensions.Localization;
+using SilentMoon.Application.Common;
 using SilentMoon.Application.Common.Extensions;
+using SilentMoon.Domain.Entities;
 using SilentMoon.Domain.Enums;
-using SilentMoon.SharedKernel.Resources;
 using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.Categories.Queries.GetCategories
 {
-    public class GetCategoriesQueryHandler : IQueryHandler<GetCategoriesQuery, List<CategoryResponse>>
+    public class GetCategoriesQueryHandler : IQueryHandler<GetCategoriesQuery, DataEnvelope<CategoryResponse>>
     {
-        private readonly IStringLocalizer<Messages> _localizer;
+        private readonly IUow _uow;
 
-        public GetCategoriesQueryHandler(IStringLocalizer<Messages> localizer)
+        public GetCategoriesQueryHandler(IUow uow)
         {
-            _localizer = localizer;
+            _uow = uow;
         }
 
-        public Task<Result<List<CategoryResponse>>> Handle(GetCategoriesQuery query, CancellationToken ct)
+        public async Task<Result<DataEnvelope<CategoryResponse>>> Handle(GetCategoriesQuery query, CancellationToken ct)
         {
-            List<CategoryResponse> categories = Enum.GetValues<ContentCategory>()
+            var categoryRepo = _uow.GetRepository<Category>();
+            var translationRepo = _uow.GetRepository<Translation>();
+
+            var categories = (await categoryRepo.GetAllAsync(ct)).AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(query.Type) &&
+                Enum.TryParse<ContentCategory>(query.Type, ignoreCase: true, out var type))
+            {
+                categories = categories.Where(x => x.Type == type);
+            }
+
+            var translations = (await translationRepo.GetAllAsync(ct))
+                .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+
+            var items = categories
+                .OrderBy(x => x.SortOrder)
                 .Select(category => new CategoryResponse
                 {
-                    Id = category.ToString().ToLowerInvariant(),
-                    Name = _localizer.LocalizeCategory(category)
+                    Id = $"cat_{category.Id}",
+                    Slug = category.Slug,
+                    Title = translations.Localize(TranslationKeys.For("Category", category.Id, "Title"), category.Title),
+                    Type = category.Type.ToString().ToLowerInvariant(),
+                    IconUrl = category.IconUrl
                 })
                 .ToList();
 
-            Result<List<CategoryResponse>> result = categories;
-
-            return Task.FromResult(result);
+            return new DataEnvelope<CategoryResponse>(items);
         }
     }
 }

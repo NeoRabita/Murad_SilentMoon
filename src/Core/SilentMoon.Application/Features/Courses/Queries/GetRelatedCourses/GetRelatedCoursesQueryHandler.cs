@@ -1,10 +1,8 @@
 using Application.Abstractions.Messaging;
-using Microsoft.Extensions.Localization;
+using SilentMoon.Application.Common;
 using SilentMoon.Application.Common.Extensions;
-using SilentMoon.Application.Features.Courses.Queries.GetCourses;
 using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
-using SilentMoon.SharedKernel.Resources;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,20 +11,18 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.Courses.Queries.GetRelatedCourses
 {
-    public class GetRelatedCoursesQueryHandler : IQueryHandler<GetRelatedCoursesQuery, List<CourseListItemResponse>>
+    public class GetRelatedCoursesQueryHandler : IQueryHandler<GetRelatedCoursesQuery, DataEnvelope<CourseSummaryResponse>>
     {
         private readonly IUow _uow;
         private readonly IFileStorageService _fileStorage;
-        private readonly IStringLocalizer<Messages> _localizer;
 
-        public GetRelatedCoursesQueryHandler(IUow uow, IFileStorageService fileStorage, IStringLocalizer<Messages> localizer)
+        public GetRelatedCoursesQueryHandler(IUow uow, IFileStorageService fileStorage)
         {
             _uow = uow;
             _fileStorage = fileStorage;
-            _localizer = localizer;
         }
 
-        public async Task<Result<List<CourseListItemResponse>>> Handle(GetRelatedCoursesQuery query, CancellationToken ct)
+        public async Task<Result<DataEnvelope<CourseSummaryResponse>>> Handle(GetRelatedCoursesQuery query, CancellationToken ct)
         {
             var contentRepo = _uow.GetRepository<Content>();
 
@@ -40,6 +36,8 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetRelatedCourses
             }
 
             var contentTopicRepo = _uow.GetRepository<ContentTopic>();
+            var contentNarratorRepo = _uow.GetRepository<ContentNarrator>();
+            var translationRepo = _uow.GetRepository<Translation>();
 
             var contentTopics = (await contentTopicRepo.GetAllAsync(ct)).ToList();
 
@@ -58,23 +56,38 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetRelatedCourses
             var relatedContents = allContents
                 .Where(x => relatedContentIds.Contains(x.Id))
                 .OrderBy(x => x.SortOrder)
-                .ToList();
+                .AsEnumerable();
 
-            var translationRepo = _uow.GetRepository<Translation>();
+            if (query.Limit.HasValue)
+            {
+                relatedContents = relatedContents.Take(query.Limit.Value);
+            }
+
+            var categoryIdByContentId = contentTopics
+                .GroupBy(x => x.ContentId)
+                .ToDictionary(g => g.Key, g => g.First().TopicId.ToString());
+
+            var narratorsByContentId = (await contentNarratorRepo.GetAllAsync(ct))
+                .GroupBy(x => x.ContentId)
+                .ToDictionary(g => g.Key, g => g.Select(n => n.Gender.ToString().ToLowerInvariant()).ToList());
 
             var translations = (await translationRepo.GetAllAsync(ct))
                 .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
 
-            var items = await Task.WhenAll(relatedContents.Select(async related => new CourseListItemResponse
+            var items = await Task.WhenAll(relatedContents.Select(async related => new CourseSummaryResponse
             {
-                Id = related.Id,
-                Title = translations.Localize(TranslationKeys.Content(related.Id, "Title"), related.Title),
-                Category = _localizer.LocalizeCategory(related.Category),
-                Duration = related.Duration,
-                ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, related.ThumbnailUrl, ct)
+                Id = $"course_{related.Id}",
+                Title = translations.Localize(TranslationKeys.For("Content", related.Id, "Title"), related.Title),
+                Subtitle = translations.Localize(TranslationKeys.For("Content", related.Id, "Subtitle"), related.Subtitle),
+                Type = related.Category.ToString().ToLowerInvariant(),
+                CategoryId = categoryIdByContentId.GetValueOrDefault(related.Id),
+                ImageUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, related.ThumbnailUrl, ct),
+                DurationSec = related.DurationSeconds,
+                IsFeatured = related.IsFeatured,
+                Narrators = narratorsByContentId.GetValueOrDefault(related.Id) ?? new List<string>()
             }));
 
-            return items.ToList();
+            return new DataEnvelope<CourseSummaryResponse>(items.ToList());
         }
     }
 }

@@ -8,9 +8,9 @@ namespace SilentMoon.WebApi.Controllers
     public class CategoriesController : BaseController
     {
         [HttpGet]
-        public async Task<IResult> GetCategories()
+        public async Task<IResult> GetCategories([FromQuery] string type)
         {
-            var result = await Dispatcher.Send(new GetCategoriesQuery());
+            var result = await Dispatcher.Send(new GetCategoriesQuery { Type = type });
 
             return HandleResult(result);
         }

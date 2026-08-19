@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using SilentMoon.Application.DTOs.Storage;
+using SilentMoon.WebApi.Contracts;
 using SilentMoon.WebApi.Services;
 using System.IO;
 using System.Threading.Tasks;
@@ -21,10 +22,10 @@ namespace SilentMoon.WebApi.Controllers
             _dispatcher ??= HttpContext.RequestServices.GetRequiredService<IDispatcher>();
 
         protected IResult HandleResult<T>(Result<T> result) =>
-            result.IsSuccess ? Results.Ok(result.Value) : ProblemFactory.CreateProblem(result);
+            result.IsSuccess ? Results.Ok(result.Value) : ProblemFactory.CreateProblem(result, HttpContext.TraceIdentifier);
 
         protected IResult HandleResult(Result result) =>
-            result.IsSuccess ? Results.Ok() : ProblemFactory.CreateProblem(result);
+            result.IsSuccess ? Results.Ok() : ProblemFactory.CreateProblem(result, HttpContext.TraceIdentifier);
 
         protected IActionResult HandleStreamResult(Result<ObjectRangeResult> result)
         {
@@ -39,7 +40,18 @@ namespace SilentMoon.WebApi.Controllers
                     ErrorType.Validation  => StatusCodes.Status400BadRequest,
                     _                    => StatusCodes.Status500InternalServerError
                 };
-                return StatusCode(statusCode, new { errorCode = result.Error.Code, detail = result.Error.Description });
+
+                var envelope = new ErrorEnvelope
+                {
+                    Error = new ErrorDetail
+                    {
+                        Code = result.Error.Code,
+                        Message = result.Error.Description,
+                        RequestId = HttpContext.TraceIdentifier
+                    }
+                };
+
+                return StatusCode(statusCode, envelope);
             }
 
             var range = result.Value;

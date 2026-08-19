@@ -70,7 +70,7 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourses
             var items = await Task.WhenAll(contents.Select(async content => new CourseListItemResponse
             {
                 Id = content.Id,
-                Title = translations.Localize(TranslationKeys.Content(content.Id, "Title"), content.Title),
+                Title = translations.Localize(TranslationKeys.For("Content", content.Id, "Title"), content.Title),
                 Category = _localizer.LocalizeCategory(content.Category),
                 Duration = content.Duration,
                 ThumbnailUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct)

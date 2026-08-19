@@ -1,7 +1,10 @@
 using Application.Abstractions.Messaging;
+using SilentMoon.Application.Common;
 using SilentMoon.Application.Common.Extensions;
+using SilentMoon.Application.Features.Tracks;
 using SilentMoon.Domain.Entities;
-using System.Collections.Generic;
+using SilentMoon.Domain.Enums;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -9,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SilentMoon.Application.Features.Courses.Queries.GetCourseTracks
 {
-    public class GetCourseTracksQueryHandler : IQueryHandler<GetCourseTracksQuery, List<TrackResponse>>
+    public class GetCourseTracksQueryHandler : IQueryHandler<GetCourseTracksQuery, DataEnvelope<TrackResponse>>
     {
         private readonly IUow _uow;
 
@@ -18,7 +21,7 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseTracks
             _uow = uow;
         }
 
-        public async Task<Result<List<TrackResponse>>> Handle(GetCourseTracksQuery query, CancellationToken ct)
+        public async Task<Result<DataEnvelope<TrackResponse>>> Handle(GetCourseTracksQuery query, CancellationToken ct)
         {
             var contentRepo = _uow.GetRepository<Content>();
 
@@ -38,19 +41,32 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseTracks
             var translations = (await translationRepo.GetAllAsync(ct))
                 .ToLanguageLookup(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
 
-            var tracks = allTracks
-                .Where(x => x.ContentId == content.Id)
+            var tracksQuery = allTracks.Where(x => x.ContentId == content.Id);
+
+            if (!string.IsNullOrWhiteSpace(query.Narrator) &&
+                Enum.TryParse<NarratorGender>(query.Narrator, ignoreCase: true, out var narrator))
+            {
+                tracksQuery = tracksQuery.Where(x => x.Narrator == narrator);
+            }
+
+            var tracks = tracksQuery
                 .OrderBy(x => x.SortOrder)
                 .Select(track => new TrackResponse
                 {
                     Id = track.Id,
-                    Title = translations.Localize(TranslationKeys.Track(track.Id, "Title"), track.Title),
-                    Duration = track.Duration,
-                    AudioUrl = $"/api/v1/tracks/{track.Id}/stream"
+                    CourseId = track.ContentId,
+                    Title = translations.Localize(TranslationKeys.For("Track", track.Id, "Title"), track.Title),
+                    Narrator = track.Narrator.ToString().ToLowerInvariant(),
+                    DurationSec = track.DurationSeconds,
+                    AudioUrl = $"/api/v1/tracks/{track.Id}/stream",
+                    MimeType = track.MimeType ?? "audio/mpeg",
+                    FileSizeBytes = track.FileSizeBytes,
+                    ImageUrl = track.ImageUrl,
+                    TrackNumber = track.SortOrder
                 })
                 .ToList();
 
-            return tracks;
+            return new DataEnvelope<TrackResponse>(tracks);
         }
     }
 }
