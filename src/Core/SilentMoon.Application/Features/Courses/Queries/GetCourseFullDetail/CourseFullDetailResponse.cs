@@ -1,8 +1,9 @@
+using SilentMoon.Application.Features.Courses;
 using System.Collections.Generic;
 
-namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
+namespace SilentMoon.Application.Features.Courses.Queries.GetCourseFullDetail
 {
-    public class CourseDetailsResponse
+    public class CourseFullDetailResponse
     {
         public int Id { get; set; }
 
@@ -15,5 +16,7 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
         public string ThumbnailUrl { get; set; }
 
         public List<string> Narrators { get; set; }
+
+        public List<TrackResponse> Tracks { get; set; }
     }
 }

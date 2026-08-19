@@ -1,4 +1,4 @@
-namespace SilentMoon.Application.Features.Courses.Queries.GetCourseDetails
+namespace SilentMoon.Application.Features.Courses
 {
     public class TrackResponse
     {

@@ -6,6 +6,7 @@ using SilentMoon.Application.Interfaces.Services;
 using SilentMoon.Domain.Entities;
 using SilentMoon.SharedKernel.Resources;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -31,21 +32,27 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetCourses
         {
             var contentRepo = _uow.GetRepository<Content>();
 
-            Expression<Func<Content, bool>> predicate = null;
+            var topicContentIds = new HashSet<int>();
+            var hasTopicFilter = query.TopicId.HasValue;
 
-            if (query.TopicId.HasValue)
+            if (hasTopicFilter)
             {
                 var contentTopicRepo = _uow.GetRepository<ContentTopic>();
 
                 var contentTopics = await contentTopicRepo.GetAllAsync(ct);
 
-                var contentIds = contentTopics
+                topicContentIds = contentTopics
                     .Where(x => x.TopicId == query.TopicId.Value)
                     .Select(x => x.ContentId)
                     .ToHashSet();
-
-                predicate = x => contentIds.Contains(x.Id);
             }
+
+            var term = query.Term?.ToUpperInvariant();
+            var hasTermFilter = !string.IsNullOrWhiteSpace(term);
+
+            Expression<Func<Content, bool>> predicate = x =>
+                (!hasTopicFilter || topicContentIds.Contains(x.Id)) &&
+                (!hasTermFilter || x.Title.ToUpper().Contains(term));
 
             var (contents, totalCount) = await contentRepo.GetPagedAsync(
                 predicate,

@@ -78,7 +78,8 @@ namespace SilentMoon.WebApi.Extensions
         {
             "Account",
             "Topics",
-            "Tracks"
+            "Tracks",
+            "Categories"
         };
 
         public static void UseAuthEnforcement(this IApplicationBuilder app)

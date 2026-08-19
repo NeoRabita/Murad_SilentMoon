@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SilentMoon.Application.Features.Courses.Queries.GetCourseDetails;
+using SilentMoon.Application.Features.Courses.Queries.GetCourseFullDetail;
 using SilentMoon.Application.Features.Courses.Queries.GetCourses;
+using SilentMoon.Application.Features.Courses.Queries.GetCourseTracks;
+using SilentMoon.Application.Features.Courses.Queries.GetRelatedCourses;
 using System.Threading.Tasks;
 
 namespace SilentMoon.WebApi.Controllers
@@ -20,6 +23,30 @@ namespace SilentMoon.WebApi.Controllers
         public async Task<IResult> GetCourseDetails(int id)
         {
             var result = await Dispatcher.Send(new GetCourseDetailsQuery { ContentId = id });
+
+            return HandleResult(result);
+        }
+
+        [HttpGet("{id:int}/tracks")]
+        public async Task<IResult> GetCourseTracks(int id)
+        {
+            var result = await Dispatcher.Send(new GetCourseTracksQuery { ContentId = id });
+
+            return HandleResult(result);
+        }
+
+        [HttpGet("{id:int}/detail")]
+        public async Task<IResult> GetCourseFullDetail(int id)
+        {
+            var result = await Dispatcher.Send(new GetCourseFullDetailQuery { ContentId = id });
+
+            return HandleResult(result);
+        }
+
+        [HttpGet("{id:int}/related")]
+        public async Task<IResult> GetRelatedCourses(int id)
+        {
+            var result = await Dispatcher.Send(new GetRelatedCoursesQuery { ContentId = id });
 
             return HandleResult(result);
         }
