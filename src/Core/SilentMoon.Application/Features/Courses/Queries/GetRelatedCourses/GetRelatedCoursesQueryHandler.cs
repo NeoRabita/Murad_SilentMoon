@@ -65,7 +65,7 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetRelatedCourses
 
             var categoryIdByContentId = contentTopics
                 .GroupBy(x => x.ContentId)
-                .ToDictionary(g => g.Key, g => g.First().TopicId.ToString());
+                .ToDictionary(g => g.Key, g => g.First().TopicId);
 
             var narratorsByContentId = (await contentNarratorRepo.GetAllAsync(ct))
                 .GroupBy(x => x.ContentId)
@@ -76,11 +76,11 @@ namespace SilentMoon.Application.Features.Courses.Queries.GetRelatedCourses
 
             var items = await Task.WhenAll(relatedContents.Select(async related => new CourseSummaryResponse
             {
-                Id = $"course_{related.Id}",
+                Id = related.Id,
                 Title = translations.Localize(TranslationKeys.For("Content", related.Id, "Title"), related.Title),
                 Subtitle = translations.Localize(TranslationKeys.For("Content", related.Id, "Subtitle"), related.Subtitle),
                 Type = related.Category.ToString().ToLowerInvariant(),
-                CategoryId = categoryIdByContentId.GetValueOrDefault(related.Id),
+                CategoryId = categoryIdByContentId.TryGetValue(related.Id, out var categoryId) ? categoryId : null,
                 ImageUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, related.ThumbnailUrl, ct),
                 DurationSec = related.DurationSeconds,
                 IsFeatured = related.IsFeatured,

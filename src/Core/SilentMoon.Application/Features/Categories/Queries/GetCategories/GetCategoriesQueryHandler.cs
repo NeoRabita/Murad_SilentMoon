@@ -40,7 +40,7 @@ namespace SilentMoon.Application.Features.Categories.Queries.GetCategories
                 .OrderBy(x => x.SortOrder)
                 .Select(category => new CategoryResponse
                 {
-                    Id = $"cat_{category.Id}",
+                    Id = category.Id,
                     Slug = category.Slug,
                     Title = translations.Localize(TranslationKeys.For("Category", category.Id, "Title"), category.Title),
                     Type = category.Type.ToString().ToLowerInvariant(),

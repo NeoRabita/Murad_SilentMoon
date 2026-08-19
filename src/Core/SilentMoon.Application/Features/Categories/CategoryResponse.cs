@@ -2,7 +2,7 @@ namespace SilentMoon.Application.Features.Categories
 {
     public class CategoryResponse
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public string Slug { get; set; }
 

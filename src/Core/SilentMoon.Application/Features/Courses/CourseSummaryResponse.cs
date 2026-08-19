@@ -4,7 +4,7 @@ namespace SilentMoon.Application.Features.Courses
 {
     public class CourseSummaryResponse
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public string Title { get; set; }
 
@@ -12,7 +12,7 @@ namespace SilentMoon.Application.Features.Courses
 
         public string Type { get; set; }
 
-        public string CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
         public string ImageUrl { get; set; }
 

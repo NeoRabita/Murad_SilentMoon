@@ -42,7 +42,7 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
 
             var categoryIdByContentId = contentTopics
                 .GroupBy(x => x.ContentId)
-                .ToDictionary(g => g.Key, g => g.First().TopicId.ToString());
+                .ToDictionary(g => g.Key, g => g.First().TopicId);
 
             var narratorsByContentId = contentNarrators
                 .GroupBy(x => x.ContentId)
@@ -95,7 +95,7 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
 
         private async Task<List<HomeItemResponse>> ToItemListAsync(
             IEnumerable<Content> contents,
-            Dictionary<int, string> categoryIdByContentId,
+            Dictionary<int, int> categoryIdByContentId,
             Dictionary<int, List<string>> narratorsByContentId,
             Dictionary<string, string> translations,
             CancellationToken ct)
@@ -108,16 +108,16 @@ namespace SilentMoon.Application.Features.User.Queries.GetHome
 
         private async Task<HomeItemResponse> ToItemAsync(
             Content content,
-            Dictionary<int, string> categoryIdByContentId,
+            Dictionary<int, int> categoryIdByContentId,
             Dictionary<int, List<string>> narratorsByContentId,
             Dictionary<string, string> translations,
             CancellationToken ct) => new()
             {
-                Id = $"course_{content.Id}",
+                Id = content.Id,
                 Title = translations.Localize(TranslationKeys.For("Content", content.Id, "Title"), content.Title),
                 Subtitle = translations.Localize(TranslationKeys.For("Content", content.Id, "Subtitle"), content.Subtitle),
                 Type = content.Category.ToString().ToLowerInvariant(),
-                CategoryId = categoryIdByContentId.GetValueOrDefault(content.Id),
+                CategoryId = categoryIdByContentId.TryGetValue(content.Id, out var categoryId) ? categoryId : null,
                 ImageUrl = await _fileStorage.GetPresignedUrlAsync(MinioBucket.Media, content.ThumbnailUrl, ct),
                 DurationSec = content.DurationSeconds,
                 IsFeatured = content.IsFeatured,
